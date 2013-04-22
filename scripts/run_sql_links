@@ -1,0 +1,33 @@
+http://api.dpml.net/ant/1.7.1/org/apache/tools/ant/taskdefs/SQLExec.html
+http://www.java-tips.org/other-api-tips/ant/how-to-use-sql-task-2.html
+http://stackoverflow.com/questions/2071682/how-to-execute-sql-script-file-in-java
+http://alvinalexander.com/java/jwarehouse/apache-ant-1.7.0/src/tests/junit/org/apache/tools/ant/taskdefs/SQLExecTest.java.shtml
+http://www.mkyong.com/jdbc/how-to-run-a-mysql-script-using-java/
+
+using ant sqlexec task: 
+
+private void executeSql(String sqlFilePath) {
+    final class SqlExecuter extends SQLExec {
+        public SqlExecuter() {
+            Project project = new Project();
+            project.init();
+            setProject(project);
+            setTaskType("sql");
+            setTaskName("sql");
+        }
+    }
+
+    SqlExecuter executer = new SqlExecuter();
+    executer.setSrc(new File(sqlFilePath));
+    executer.setDriver(args.getDriver());
+    executer.setPassword(args.getPwd());
+    executer.setUserid(args.getUser());
+    executer.setUrl(args.getUrl());
+    executer.setPrint(true);
+    executer.setOutput(new File(args.getLog()));
+    executer.execute();
+}
+
+ant sqlexec task unit test:
+
+ibatis script runner example:
