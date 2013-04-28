@@ -2,6 +2,8 @@ package controllers.helpers;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import models.IngestParams;
@@ -20,8 +22,6 @@ import org.codehaus.jackson.node.ObjectNode;
 import com.avaje.ebean.Ebean;
 
 public class JournalIngestHelper {
-    private static int jobNo = -1;
-    
     public synchronized static void updateJournalTitle(String pi, String title) throws IngestException {
         // TODO: parse input params: pi, title
         Thing t = Thing.findByPI.byId(pi);
@@ -60,17 +60,19 @@ public class JournalIngestHelper {
             String dlirStoragePath = IngestUnion.DLIR_FS_BASE + "/" + ingestParams.pi + "/";
             IngestMETS data = new IngestMETS(dlirStoragePath, ingestParams.pi, metsPath, ts);
             data.setCollectionArea(collectionArea);
-            
-            if (jobNo == -1)
-                jobNo = IngestUnion.getJobNo();
-            else
-                jobNo++;
-            
-            data.setIngestJobId(jobNo);
-            List<IngestEntry> entries = data.validateIngestData(ingestType);
-            
+
+            List<IngestEntry> entries = data.validateIngestData(ingestType);            
             if (entries != null) {
                 JellyGraph ingestGraph = data.getMetadataGraph();
+                String jobName = "ingest " + ingestParams.pi;
+                String topUUID = topItem.pi;
+                Integer status = IngestUnion.IngestStatus.CLEAN.ordinal() + 1;
+                String statusDesc = IngestUnion.IngestStatus.CLEAN.name();
+                Timestamp start = (Timestamp) new Date();
+                
+                // TODO: check whether ts, topUUID has already been inserted, and its status is not eq. ingested
+                Long jobNo = ingestGraph.newIngestStatus(jobName, ts, topUUID, status, statusDesc, start, null).jobNo;
+                data.setIngestJobId(jobNo);
                 ingestGraph.logIngest(new Long(jobNo), ts, ingestParams.pi);
             
                 Thing parent = topItem;

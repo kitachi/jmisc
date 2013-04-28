@@ -38,7 +38,7 @@ public class IngestData {
     public static boolean LOG_INGEST = true;
     public static boolean SKIP_INGEST = false;
 
-    protected Integer jobId;
+    protected Long jobId;
     protected String collectionArea = "";
     protected String topPI = "";
     protected String dlirStore = "";
@@ -173,7 +173,7 @@ public class IngestData {
         this.collectionArea = collectionArea;
     }
 
-    public void setIngestJobId(Integer jobId) {
+    public void setIngestJobId(Long jobId) {
         this.jobId = jobId;
     }
 

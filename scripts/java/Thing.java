@@ -50,26 +50,19 @@ public class Thing extends Model {
     }
     
     public static enum ThingRelationship {
-        ISPARTOF(1), ISCOPYOF(2), ISFILEOF(3);
-        
-        private int code;
-        private ThingRelationship(int code) {
-            this.code = code;
-        }
-        
+        ISPARTOF, ISCOPYOF, ISFILEOF;
+
         public int code() {
-            return code;
+            return this.ordinal() + 1;
         }
     }
     
     public static enum CopyRole {
-        ACCESS_COPY("ac",0), MASTER_COPY("m",1), OCR_JSON_COPY("oc",2), OCR_ALTO_COPY("at",3), METS_JSON_COPY("mc",4), OCR_METS_COPY("mt",5);
+        ACCESS_COPY("ac"), MASTER_COPY("m"), OCR_JSON_COPY("oc"), OCR_ALTO_COPY("at"), METS_JSON_COPY("mc"), OCR_METS_COPY("mt");
         
         private String code;
-        private int idx;
-        private CopyRole(String code, int idx) {
+        private CopyRole(String code) {
             this.code = code;
-            this.idx = idx;
         }
         
         public String code() {
@@ -77,7 +70,7 @@ public class Thing extends Model {
         }
         
         public int idx() {
-            return idx;
+            return this.ordinal();
         }
     }
     
