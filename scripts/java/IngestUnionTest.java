@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -20,18 +23,22 @@ import javax.imageio.ImageReader;
 
 import models.ingest.IngestData;
 import models.ingest.IngestEntry;
+import models.ingest.IngestMETS;
 import models.IngestParams;
 import models.Thing;
 import models.ThingFile;
 
 import org.apache.commons.io.FileUtils;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
+import static org.junit.Assert.assertEquals;
 import scala.actors.threadpool.Arrays;
 import utils.DbUtil;
-
 import controllers.ImageRefController;
 import controllers.helpers.IngestUnion;
 import static play.test.Helpers.fakeApplication;
@@ -84,7 +91,7 @@ public class IngestUnionTest {
         } else if (piIdx.equals("nla.aus-an3281107")) {
             ts = "20130417T120058";
             basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+                    + System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-an3281107/";
             params.pi = "nla.aus-an3281107";
             params.bibId = "2770260";
@@ -95,8 +102,7 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.aus-an3819304")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-an3819304/";
             params.pi = "nla.aus-an3819304";
             params.bibId = "814517";
@@ -107,8 +113,7 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.aus-an4911308")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-an4911308/";
             params.pi = "nla.aus-an4911308";
             params.bibId = "857989";
@@ -119,8 +124,7 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.aus-an7221679")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-an7221679/";
             params.pi = "nla.aus-an7221679";
             params.bibId = "1810632";
@@ -131,8 +135,7 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.aus-f2678")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-f2678/";
             params.pi = "nla.aus-f2678";
             params.bibId = "380565";
@@ -143,8 +146,7 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.aus-f2688")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-f2688/";
             params.pi = "nla.aus-f2688";
             params.bibId = "998720";
@@ -155,8 +157,7 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.aus-nk1428")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-nk1428/";
             params.pi = "nla.aus-nk1428";
             params.bibId = "1034206";
@@ -167,8 +168,7 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.aus-nk4232")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-nk4232/";
             params.pi = "nla.aus-nk4232";
             params.bibId = "147281";
@@ -179,8 +179,7 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.aus-nk5677")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-nk5677/";
             params.pi = "nla.aus-nk5677";
             params.bibId = "392527";
@@ -191,8 +190,7 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.aus-nk873")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.aus-nk873/";
             params.pi = "nla.aus-nk873";
             params.bibId = "90039";
@@ -203,13 +201,21 @@ public class IngestUnionTest {
 
         } else if (piIdx.equals("nla.gen-an6520463s")) {
             ts = "20130417T120058";
-            basedir = System.getenv("LOCAL_PREFIX")
-                    + System.getenv("DLIR_FS_DERIVE");
+            basedir = System.getenv("DERIVATIVE_AREA_CONFIG");
             params.imageDirectory = basedir + ts + "-" + "nla.gen-an6520463/";
             params.pi = "nla.gen-an6520463";
             params.bibId = "87364 ";
             params.creator = "";
             params.title = "";
+            params.ocrAltoDirectory = "";
+            params.ocrJsonDirectory = "";
+        } else if (piIdx.equals("nla.aus-issn00050458")) {
+            ts = IngestUnion.getTimestamp();
+            params.imageDirectory = Paths.get("/doss-devel/dlir/working/aww_testdata/1950-02-25/jp2").toString();
+            params.pi = "nla.aus-issn00050458";
+            params.bibId = "1935438";
+            params.creator = "aww team";
+            params.title = "The Australian Women's Weekly (1933 - 1982) in Jelly";
             params.ocrAltoDirectory = "";
             params.ocrJsonDirectory = "";
         }
@@ -249,7 +255,7 @@ public class IngestUnionTest {
             File[] files = imgDir.listFiles(jp2Filter);
             System.out.println(files.length + " files found.");
 
-            IngestData data = new IngestData(IngestUnion.DLIR_FS_BASE,
+            IngestData data = new IngestData(Paths.get(IngestUnion.DLIR_FS_BASE),
                     params.pi, params, "SHA1", getTS());
             List<IngestEntry> entries = data.validateIngestData();
             File out = new File("/tmp/ingest/" + pi + ".txt");
@@ -338,8 +344,8 @@ public class IngestUnionTest {
         return ts;
     }
     
-    // @Ignore
-    @Test
+    @Ignore
+    // @Test
     public void testUpdateJournalTitle() {
         running(fakeApplication(), new Runnable() {
            @Override
@@ -352,6 +358,56 @@ public class IngestUnionTest {
                    ex.printStackTrace();
                }              
            }
+        });
+    }
+    
+    @Ignore
+    //@Test
+    public void testValidateJournalIssueEntries() {
+        running(fakeApplication(), new Runnable() {
+           @Override
+           public void run() {
+               // String ts = IngestUnion.getTimestamp();
+               String ts = "20130429T120058";
+               String metspath = Paths.get("/doss-devel/dlir/working/aww_testdata/1950-02-25/mets-issue-nla.aus-issn00050458_19500225.xml").toString();
+               IngestParams params = ingestParams("nla.aus-issn00050458");
+               try {
+                System.out.println(new ObjectMapper().writeValueAsString(params));
+                Path metsPath = Paths.get(metspath);
+                Path dlirStoragePath = Paths.get(IngestUnion.DLIR_FS_BASE);
+                IngestMETS data = new IngestMETS(dlirStoragePath, params.pi, metsPath, ts);
+                data.setCollectionArea("nla.news");
+
+                List<IngestEntry> entries = data.validateIngestData(IngestEntry.ThingSubType.ISSUE);
+                System.out.println("\n");
+                for (IngestEntry entry : entries) {
+                    ObjectNode node = entry.toJson("/doss-devel/dlir/master", "/doss-devel/dlir/derivative", "nla.aus-issn00050458");
+                    System.out.println(new ObjectMapper().writeValueAsString(node) + "\n\n");
+                }
+            } catch (NoSuchAlgorithmException|IOException|InvalidPathException e) {
+                e.printStackTrace();
+            }
+           }
+        });
+    }
+    
+    // @Ignore
+    @Test
+    public void testIngestJournalIssue() {
+        running(fakeApplication(), new Runnable() {
+            @Override
+            public void run() {
+                String titlePI = "nla.aww-title112";
+                String ts = IngestUnion.getTimestamp();
+                String metsPath = Paths.get("/doss-devel/dlir/working/aww_testdata/1950-02-25/mets-issue-nla.aus-issn00050458_19500225.xml").toString();
+                IngestParams params = ingestParams("nla.aus-issn00050458");
+                try {
+                    JournalIngestHelper.ingest(titlePI, metsPath, params);
+                } catch (NoSuchAlgorithmException | IngestException
+                        | IOException e) {
+                    e.printStackTrace();
+                }
+            }
         });
     }
 
@@ -432,13 +488,13 @@ public class IngestUnionTest {
             @Override
             public void run() {
                 assertEquals(IngestUnion.DLIR_FS_BASE,
-                        "/Volumes/doss-devel/dlir/");
+                        "/doss-devel/dlir/");
                 assertEquals(IngestUnion.DLIR_FS_WORKING,
-                        "/Volumes/doss-devel/dlir/working/ingest_testdata/");
+                        "/doss-devel/dlir/working/ingest_testdata/");
                 assertEquals(IngestUnion.DLIR_FS_MASTER,
-                        "/Volumes/doss-devel/dlir/master/");
+                        "/doss-devel/dlir/master/");
                 assertEquals(IngestUnion.DLIR_FS_DERIVATIVE,
-                        "/Volumes/doss-devel/dlir/derivative/");
+                        "/doss-devel/dlir/derivative/");
                 assertEquals(IngestUnion.SCRIPT_TEMPLATE_DIR,
                         "/Users/szhou/git/jelly-sz-ingest-script/scripts/");
                 assertEquals(IngestUnion.INGEST_TEMPLATE, "ingest_template.sql");
@@ -700,14 +756,14 @@ public class IngestUnionTest {
                     try {
                             Thing acCopy = page.getCurrentCopy(Thing.ACCESS_COPY);
                             ThingFile acFile = ThingFile.findCopyForWork.byId(acCopy);
-                            String filePath = "/Volumes/doss-devel/dlir/derivative/20130402T145925-nla.mus-vn1232378/"
+                            String filePath = "/doss-devel/dlir/derivative/20130402T145925-nla.mus-vn1232378/"
                                     + acFile.fileName;
                             filePath = filePath.replace("-ac.jp2", ".jp2");
                             // FileUtils.write(list, filePath + "," + acFile.id + "\n", true);
                             FileUtils.write(list, acFile.id + "\n", true);
                             Thing ocCopy = page.getCurrentCopy(Thing.OCR_COPY);
                             ThingFile ocFile = ThingFile.findCopyForWork.byId(ocCopy);
-                            filePath = "/Volumes/doss-devel/dlir/derivative/20130402T145925-nla.mus-vn1232378/" + ocFile.fileName;
+                            filePath = "/doss-devel/dlir/derivative/20130402T145925-nla.mus-vn1232378/" + ocFile.fileName;
                             // FileUtils.write(list, filePath + "," + ocFile.id + "\n", true);
                             FileUtils.write(list, ocFile.id + "\n", true);
         
@@ -733,7 +789,7 @@ public class IngestUnionTest {
                 for (Thing page : pages) {
                     Thing acCopy = page.getCurrentCopy(Thing.ACCESS_COPY);
                     ThingFile acFile = ThingFile.findCopyForWork.byId(acCopy);
-                    String filePath = "/Volumes/doss-devel/dlir/derivative/20130402T145925-nla.mus-vn1232378/" + acFile.fileName;
+                    String filePath = "/doss-devel/dlir/derivative/20130402T145925-nla.mus-vn1232378/" + acFile.fileName;
                     filePath = filePath.replace("-ac.jp2", ".jp2");
                     File _acFile = new File(filePath);
                     try {
@@ -761,7 +817,7 @@ public class IngestUnionTest {
                 for (Thing page : pages) {
                     Thing ocCopy = page.getCurrentCopy(Thing.OCR_COPY);
                     ThingFile ocFile = ThingFile.findCopyForWork.byId(ocCopy);
-                    String filePath = "/Volumes/doss-devel/dlir/derivative/20130402T145925-nla.mus-vn1232378/" + ocFile.fileName;
+                    String filePath = "/doss-devel/dlir/derivative/20130402T145925-nla.mus-vn1232378/" + ocFile.fileName;
                     File _ocFile = new File(filePath);
                     try {
                         FileUtils.write(list, _ocFile.length() + "," + checksum(_ocFile) + ",# " + ocFile.id + "\n", true);
