@@ -1,0 +1,41 @@
+@(jobs: List[models.ingest.JobStatus])  
+
+@listJobStatus(jobs: List[models.ingest.JobStatus]) = {
+	@for(job <- jobs) {
+		<tr>
+			<td align="right">@job.id</td>
+			<td align="right">@job.jobTS</td>
+			<td align="right">@job.jobName</td>
+			<td align="right">@job.topUUID</td>
+			<td align="right">@job.status</td>
+			<td align="right">@job.statusDescription</td>
+			<td align="right">@job.startDate</td>
+			<td align="right">@job.endDate</td>
+		</tr>
+	}
+}
+
+@views.html.common.main(pageTitle = "Job Status", pageHeader = "Ingest Jobs Listing") {
+	<table border="1">
+		<tr>
+			<th>Job No.</th>
+			<th>Timestamp</th>
+			<th>Job Name</th>
+			<th>PI / UUID</th>
+			<th>Status</th>
+			<th>Description</th>
+			<th>Start Date</th>
+			<th>End Date</th>
+		</tr>
+		
+		@listJobStatus(jobs = jobs)
+	</table>
+}	   
+	   
+    
+    
+  
+
+
+
+   

@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -141,7 +142,7 @@ public class IngestUnion {
      * precond: will check ingestSatus, and only activate IngestJob is
      * ingestStatus is clean.
      * 
-     * @param jobNo
+     * @param id
      * @return the assigned job number, or -1 if fail to activate the ingest
      *         job.
      */
@@ -341,8 +342,7 @@ public class IngestUnion {
             scriptTopItem(script, ts, ingestParams,
                     scriptLines.get(TOP_ITEM_TAG));
 
-            IngestData data = new IngestData(DLIR_FS_BASE + ingestParams.pi
-                    + "/", ingestParams.pi, ingestParams, CHECKSUM_SHA1, ts);
+            IngestData data = new IngestData(Paths.get(DLIR_FS_BASE).resolve(ingestParams.pi), ingestParams.pi, ingestParams, CHECKSUM_SHA1, ts);
 
             // System.out.println(DLIR_FS_BASE + ingestParams.pi + "/");
             // System.out.println(Json.toJson(ingestParams));
@@ -500,8 +500,8 @@ public class IngestUnion {
                 "" + entry.getFileSize(Thing.CopyRole.ACCESS_COPY));
         acFilePart = acFilePart.replaceAll(CHECKSUM_TAG,
                 entry.getFileChecksum(Thing.CopyRole.ACCESS_COPY));
-        acFilePart = acFilePart.replaceAll(IMAGE_HEIGHT, "" + entry.height());
-        acFilePart = acFilePart.replaceAll(IMAGE_WIDTH, "" + entry.width());
+        acFilePart = acFilePart.replaceAll(IMAGE_HEIGHT, "" + ((entry.height() == null)?0:entry.height()));
+        acFilePart = acFilePart.replaceAll(IMAGE_WIDTH, "" + ((entry.width() == null)?0:entry.width()));
         acFilePart = acFilePart.replaceAll(JOB_TS_TAG, ts);
         acFilePart = acFilePart.replaceAll(TOP_UUID_TAG, ingestParams.pi);
         // System.out.println(acFilePart);
@@ -541,7 +541,7 @@ public class IngestUnion {
     /**
      * createUndoScript
      * 
-     * @param jobNo
+     * @param id
      * @param ingestParams
      * @return
      */

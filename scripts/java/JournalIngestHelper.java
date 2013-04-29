@@ -1,6 +1,8 @@
 package controllers.helpers;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -8,12 +10,14 @@ import java.util.List;
 
 import models.IngestParams;
 import models.Thing;
+import models.ThingDescription;
 import models.ThingNotFoundException;
 import models.ingest.IngestData;
 import models.ingest.IngestEntry.ThingSubType;
 import models.ingest.IngestEntry;
 import models.ingest.IngestMETS;
 import models.ingest.JellyGraph;
+import models.ingest.JobStatus;
 import models.ingest.Relationship;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -24,7 +28,19 @@ import com.avaje.ebean.Ebean;
 public class JournalIngestHelper {
     public synchronized static void updateJournalTitle(String pi, String title) throws IngestException {
         // TODO: parse input params: pi, title
-        Thing t = Thing.findByPI.byId(pi);
+        Thing t;
+        try {
+            t = Thing.findByPI.byId(pi);
+        } catch (ThingNotFoundException e) {
+            t = new Thing();
+            t.collectionArea = "nla.news";
+            t.pi = pi;
+            t.oldId = pi;
+            t.tType = Thing.ThingType.WORK.name().toLowerCase();
+            t.subType = IngestEntry.ThingSubType.TITLE.name().toLowerCase();
+            t.description = "{}".getBytes();
+        }
+        
         try {
             ObjectNode desc;
             
@@ -38,13 +54,13 @@ public class JournalIngestHelper {
         }   
     }
     
-    public synchronized static void newJournalIssue(String titlePI, IngestParams ingestParams) throws IngestException, NoSuchAlgorithmException, IOException {
+    public synchronized static void ingest(String titlePI, String metspath, IngestParams ingestParams) throws IngestException, NoSuchAlgorithmException, IOException {
         Thing journalTitle;
         String collectionArea = "nla.news";
         
         try {
             journalTitle = Thing.findByPI.byId(titlePI);
-            ingest(ingestParams, collectionArea, journalTitle, IngestEntry.ThingSubType.ISSUE);
+            ingest(metspath, ingestParams, collectionArea, journalTitle, IngestEntry.ThingSubType.ISSUE);
         } catch (ThingNotFoundException ex) {
             throw new IngestException(ex.getLocalizedMessage());
         }
@@ -52,12 +68,13 @@ public class JournalIngestHelper {
 
     }
     
-    protected synchronized static void ingest(IngestParams ingestParams, String collectionArea, Thing topItem, IngestEntry.ThingSubType ingestType) throws IngestException {
+    protected synchronized static void ingest(String metspath, IngestParams ingestParams, String collectionArea, Thing topItem, IngestEntry.ThingSubType ingestType) throws IngestException {
         try {
             Ebean.beginTransaction();
             String ts = IngestUnion.getTimestamp();
-            String metsPath = IngestUnion.DLIR_FS_WORKING + "/" + ingestParams.pi + "/";
-            String dlirStoragePath = IngestUnion.DLIR_FS_BASE + "/" + ingestParams.pi + "/";
+            // Path metsPath = Paths.get(IngestUnion.DLIR_FS_WORKING).resolve(ingestParams.pi);
+            Path metsPath = Paths.get(metspath);
+            Path dlirStoragePath = Paths.get(IngestUnion.DLIR_FS_BASE);
             IngestMETS data = new IngestMETS(dlirStoragePath, ingestParams.pi, metsPath, ts);
             data.setCollectionArea(collectionArea);
 
@@ -68,10 +85,10 @@ public class JournalIngestHelper {
                 String topUUID = topItem.pi;
                 Integer status = IngestUnion.IngestStatus.CLEAN.ordinal() + 1;
                 String statusDesc = IngestUnion.IngestStatus.CLEAN.name();
-                Timestamp start = (Timestamp) new Date();
+                Timestamp start = new Timestamp(new Date().getTime());
                 
                 // TODO: check whether ts, topUUID has already been inserted, and its status is not eq. ingested
-                Long jobNo = ingestGraph.newIngestStatus(jobName, ts, topUUID, status, statusDesc, start, null).jobNo;
+                Long jobNo = ingestGraph.newIngestStatus(jobName, ts, topUUID, status, statusDesc, null, null).id;
                 data.setIngestJobId(jobNo);
                 ingestGraph.logIngest(new Long(jobNo), ts, ingestParams.pi);
             
@@ -81,9 +98,19 @@ public class JournalIngestHelper {
                     if (entry.parentEntry() != null) {
                         parent = Thing.findByPI.byId(entry.parentEntry().pi());
                     }
-                    Thing work = data.createJellyItem(parent, entry, relOrder);
+                    ThingDescription desc;
+                    if (entry.getEntryType() == IngestEntry.ThingSubType.PAGE) {
+                        desc = desc(ingestParams.title, ingestParams.creator, entry.pi(), relOrder);
+                    } else {
+                        desc = desc(ingestParams.title);
+                    }
+                        
+                    Thing work = data.createJellyItem(parent, entry, desc, relOrder);
                     relOrder++;
                 }
+                
+                JobStatus s = JobStatus.find.byId(jobNo);
+                ingestGraph.updateIngestStatus(s, jobName, ts, topUUID, IngestUnion.IngestStatus.INGESTED.ordinal() + 1, "ingested", null, null);
             }
             
             Ebean.commitTransaction();
@@ -92,5 +119,22 @@ public class JournalIngestHelper {
         } catch (IOException ex) {
             throw new IngestException("Fail to ingest " + ingestParams.pi, ex);
         }
+    }
+    
+    private synchronized static ThingDescription desc(String title) {
+        ThingDescription description = new ThingDescription();
+        description.handleUnknown("title", title);
+        return description;
+    }
+    
+    private synchronized static ThingDescription desc(String title, String creator, String uuid, int relOrder) {
+        ThingDescription description = new ThingDescription();
+        description.handleUnknown("workPid", uuid);
+        description.handleUnknown("subUnitType", "Page " + relOrder);
+        description.handleUnknown("bibLevel", "Part");
+        description.handleUnknown("digitalStatus", "Digitised");
+        description.handleUnknown("title", title);
+        description.handleUnknown("creator", creator);
+        return description;
     }
 }

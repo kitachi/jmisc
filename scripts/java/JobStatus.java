@@ -21,7 +21,7 @@ public class JobStatus extends Model {
     public static final int TS_IDX = 1;
 
     @Id
-    public Long jobNo;
+    public Long id;
 
     @Column(name = "jobTS")
     public String jobTS;
