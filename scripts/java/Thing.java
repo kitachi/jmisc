@@ -2,6 +2,7 @@ package models;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.security.InvalidParameterException;
@@ -19,10 +20,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import models.ingest.IngestEntry.ThingSubType;
 import nu.xom.Document;
 import nu.xom.Element;
 
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
@@ -58,7 +62,7 @@ public class Thing extends Model {
     }
     
     public static enum CopyRole {
-        ACCESS_COPY("ac"), MASTER_COPY("m"), OCR_JSON_COPY("oc"), OCR_ALTO_COPY("at"), METS_JSON_COPY("mc"), OCR_METS_COPY("mt");
+        ACCESS_COPY("ac"), MASTER_COPY("m"), OCR_JSON_COPY("oc"), OCR_ALTO_COPY("at"), OCR_METS_COPY("mt");
         
         private String code;
         private CopyRole(String code) {
@@ -71,6 +75,14 @@ public class Thing extends Model {
         
         public int idx() {
             return this.ordinal();
+        }
+        
+        public static CopyRole isCopyRole(String copyRole) {
+            for (CopyRole _copyRole : CopyRole.values()) {
+                if (_copyRole.name().equalsIgnoreCase(copyRole))
+                    return _copyRole;
+            }
+            return null;
         }
     }
     
@@ -574,6 +586,11 @@ public class Thing extends Model {
                 }
             }
         }
+    }
+    
+    public synchronized void updateDescription(ThingDescription desc) throws JsonGenerationException, JsonMappingException, IOException {
+        description = desc.getBytes();
+        this.save();
     }
 
     private void addChildElement(Element element, String name, Object value) {

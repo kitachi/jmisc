@@ -11,12 +11,20 @@ import org.codehaus.jackson.node.ObjectNode;
 
 import play.Play;
 import play.libs.Json;
-
 import models.Thing;
+import models.Thing.ThingRelationship;
 
 public class IngestEntry {        
     public static enum ThingSubType {
-        WORK, COPY, FILE, PAGE, VOLUME, BOOK, CHAPTER, TITLE, ISSUE, EDITION, SECTION, SUPPLEMENT, ARTICLE, ARTICLEPART
+        WORK, COPY, FILE, PAGE, VOLUME, BOOK, CHAPTER, TITLE, ISSUE, EDITION, SECTION, SUPPLEMENT, ARTICLE, ARTICLEPART;
+        
+        public static ThingSubType isType(String subType) {
+            for (ThingSubType _subType : ThingSubType.values()) {
+                if (_subType.name().equalsIgnoreCase(subType))
+                    return _subType;
+            }
+            return null;
+        }
     }
     
     protected Map<Thing.CopyRole, IngestFile> entryData = new HashMap<Thing.CopyRole, IngestFile>();
@@ -24,6 +32,8 @@ public class IngestEntry {
     protected IngestEntry parentEntry;
     protected String ts;
     protected String pi;
+    protected Long id;
+    protected Integer order;
     
     public IngestEntry parentEntry() {
         return parentEntry;
@@ -37,12 +47,8 @@ public class IngestEntry {
         return (entryData.get(copyRole) == null)? null : entryData.get(copyRole).fileName;
     }
     
-//    public String getFilePath(String baseDir, String topPI, Thing.CopyRole copyRole) {
-//        return Paths.get(baseDir).resolve(ts + "-" + topPI).resolve(getFileName(copyRole)).toAbsolutePath().toString();
-//    }
-    
     public String getFilePath(String baseDir, String topPI, Thing.CopyRole copyRole) {
-        return Paths.get(baseDir).resolve(getFileName(copyRole)).toAbsolutePath().toString();
+        return Paths.get(baseDir).resolve(ts + "-" + topPI).resolve(getFileName(copyRole)).toAbsolutePath().toString();
     }
 
     public long getFileSize(Thing.CopyRole copyRole) {
@@ -51,6 +57,10 @@ public class IngestEntry {
 
     public String getFileChecksum(Thing.CopyRole copyRole) {
         return (entryData.get(copyRole) == null)? null : entryData.get(copyRole).checkSum;
+    }
+    
+    public Long getId() {
+        return id;
     }
 
     public Integer width() {
@@ -107,6 +117,10 @@ public class IngestEntry {
         return getFileName(Thing.CopyRole.OCR_ALTO_COPY);
     }
     
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public ObjectNode toJson(String masterBase, String deriveBase, String topPI) {
         ObjectNode node = Json.newObject();
         node.put("parentEntry", (parentEntry() == null)?"":parentEntry().getEntryType().name());
@@ -118,7 +132,6 @@ public class IngestEntry {
             node.put(copyRole.name() + " fileName", getFileName(copyRole));
             
             if ((copyRole == Thing.CopyRole.ACCESS_COPY) ||
-               (copyRole == Thing.CopyRole.METS_JSON_COPY) ||
                (copyRole == Thing.CopyRole.OCR_JSON_COPY)) {
                 node.put(copyRole.name() + " filePath", getFilePath(deriveBase, topPI, copyRole));
             } else {

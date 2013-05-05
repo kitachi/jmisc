@@ -83,10 +83,10 @@ public class IngestData {
         metadata = new JellyGraph();
     }
 
-    public synchronized Thing createJellyItem(Thing parent, IngestEntry entry,
+    public synchronized Thing createJellyItem(Thing parent, IngestEntry entry, String link,
             ThingDescription desc, int relOrder) throws JsonGenerationException, JsonMappingException,
             NoSuchAlgorithmException, IOException {
-        Thing work = createWork(entry, parent, desc, relOrder);
+        Thing work = createWork(entry, parent, link, desc, relOrder);
         Map<Thing.CopyRole, IngestFile> copies = entry.entryData;
         for (Thing.CopyRole copyRole : copies.keySet()) {
             Thing copy = createCopy(entry, copyRole, work);
@@ -95,7 +95,7 @@ public class IngestData {
         return work;
     }
 
-    public synchronized Thing createWork(IngestEntry entry, Thing parent,
+    public synchronized Thing createWork(IngestEntry entry, Thing parent, String link,
             ThingDescription desc, Integer relOrder) throws JsonGenerationException, JsonMappingException, IOException {
         Thing work = metadata.addThing(collectionArea, entry.pi(),
                 Thing.ThingType.WORK.name().toLowerCase(), entry.entryType
@@ -120,7 +120,7 @@ public class IngestData {
         // Record in ThingCopy
         ThingCopy _copy = new ThingCopy();
         _copy.id = copy.id;
-        _copy.copyPid = entry.pi() + "-ac-v1";
+        _copy.copyPid = entry.pi() + "-" + copyRole.code() + "-v1";
         _copy.workPid = entry.pi();
 
         // TODO: need to query query to set all previous copies ingested with
@@ -134,7 +134,7 @@ public class IngestData {
         _copy.copyType = "d";
         _copy.copyRole = copyRole.code();
         _copy.carrier = "Online";
-        _copy.dateCreated = (Timestamp) new Date();
+        _copy.dateCreated = null;
         _copy.sourceCopy = entry.pi() + "-m-v1";
         _copy.accessConditions = "Unrestricted";
         _copy.expiryDate = null;
@@ -151,7 +151,7 @@ public class IngestData {
     public synchronized Thing createFile(IngestEntry entry,
             Thing.CopyRole copyRole, Thing parent)
             throws JsonGenerationException, JsonMappingException, IOException {
-        Thing file = metadata.addThing(collectionArea, entry.pi(),
+        Thing file = metadata.addThing(collectionArea, entry.pi() + "-" + copyRole + "-f",
                 Thing.ThingType.FILE.name().toLowerCase(), Thing.ThingType.FILE
                         .name().toLowerCase());
 
@@ -168,11 +168,24 @@ public class IngestData {
 
         // add description
         ObjectNode node = _file.toJson();
-        node.put("width", entry.width());
-        node.put("height", entry.height());
+        // node.put("width", entry.width());
+        // node.put("height", entry.height());
+        node.put("width", "2265");
+        node.put("height", "2138");
 
         file.description = new ObjectMapper().writeValueAsBytes(node);
         file.save();
+        
+        // Todo fileLocation
+        FileLocation location = new FileLocation();
+        location.id = file.id;
+        
+        if ((copyRole == Thing.CopyRole.ACCESS_COPY) || (copyRole == Thing.CopyRole.METS_JSON_COPY) || (copyRole == Thing.CopyRole.OCR_JSON_COPY))
+            location.fileLocation = entry.getFilePath(dlirStore.resolve("derivative").toString(), topPI, copyRole);
+        else 
+            location.fileLocation = entry.getFilePath(dlirStore.resolve("master").toString(), topPI, copyRole);  
+        location.save();
+        
         return file;
     }
 
@@ -223,9 +236,15 @@ public class IngestData {
         if ((files == null) || (files.length == 0))
             return null;
         List<IngestEntry> entries = new ArrayList<IngestEntry>();
-        // entryIterator = Collections.enumeration(entries);
         for (File file : files) {
             // System.out.println("file: " + file.getName());
+            
+            //TODO: get the following from the IngestMetsHelper
+            //       - copyrole (ac, m, oc, at, mt)
+            //       - filename
+            //       - relative location
+            //       - height, width for images
+            //       - page order
             IngestEntry entry = new IngestEntry();
             entry.ts = ts;
             entry.entryType = IngestEntry.ThingSubType.PAGE;
@@ -235,9 +254,9 @@ public class IngestData {
             acFile.fileSize = file.length();
             acFile.checkSum = checksum(file);
             // get image height and width
-            BufferedImage source = ImageIO.read(file);
-            acFile.width =  0; // source.getWidth();
-            acFile.height = 0; // source.getHeight();
+            // BufferedImage source = ImageIO.read(file);
+            acFile.width = 2265; // source.getWidth();
+            acFile.height = 2978; // source.getHeight();
             entry.entryData.put(Thing.CopyRole.ACCESS_COPY, acFile);
             
             Path masterSrcPath = Paths.get(srcDirs[Thing.CopyRole.MASTER_COPY.idx()]);
@@ -280,8 +299,6 @@ public class IngestData {
                 entry.entryData.put(Thing.CopyRole.OCR_JSON_COPY, ocFile);
             }
             
-            // System.out.println(new ObjectMapper().writeValueAsString(entry.toJson("/doss-devel/dlir/master", "/doess-devel/dlir/derivative", topPI)));
-
             entries.add(entry);
         }
         return entries;
