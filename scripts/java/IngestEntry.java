@@ -11,19 +11,40 @@ import org.codehaus.jackson.node.ObjectNode;
 
 import play.Play;
 import play.libs.Json;
+
 import models.Thing;
-import models.Thing.ThingRelationship;
 
 public class IngestEntry {        
     public static enum ThingSubType {
-        WORK, COPY, FILE, PAGE, VOLUME, BOOK, CHAPTER, TITLE, ISSUE, EDITION, SECTION, SUPPLEMENT, ARTICLE, ARTICLEPART;
+        WORK("works"), COPY("copies"), FILE("files"), PAGE("pages"), VOLUME("volumes"), BOOK("books"), CHAPTER("chapters"), TITLE("titles"), ISSUE("issues"), EDITION("editions"), SECTION("sections"), SUPPLEMENT("supplements"), ARTICLE("articles"), REGION("zones");
         
-        public static ThingSubType isType(String subType) {
-            for (ThingSubType _subType : ThingSubType.values()) {
-                if (_subType.name().equalsIgnoreCase(subType))
-                    return _subType;
-            }
-            return null;
+        private String plural;
+        private ThingSubType(String plural) {
+            this.plural = plural;
+        }
+        
+        public String plural() {
+            return plural;
+        }
+        
+        public boolean existForOCR() {
+            return (this == COPY) || (this == PAGE) || (this == REGION);
+        }
+        
+        public boolean existInJournalIssue() {
+            return existForOCR() || (this == ARTICLE) || (this == ISSUE) || (this == EDITION) || (this == SECTION) || (this == SUPPLEMENT);
+        }
+        
+        public boolean existInJournal() {
+            return existInJournalIssue() || (this == VOLUME);
+        }
+        
+        public boolean existInBook() {
+            return existForOCR() || (this == BOOK) || (this == CHAPTER);
+        }
+        
+        public boolean existInSerial() {
+            return existInBook() || (this == VOLUME);
         }
     }
     
@@ -74,9 +95,8 @@ public class IngestEntry {
     }
 
     public int order() {
-        // TODO: current default to the number in acFileName,
-        // to lookup in METS file later maybe.
-        if (entryType != ThingSubType.PAGE) return 0;
+    	if (order != null) return order;
+        // if (entryType != ThingSubType.PAGE) return 0;
         
         Pattern pattern = Pattern.compile("\\s*(\\d+)\\.jp2");
         Matcher matcher = pattern.matcher(getFileName(Thing.CopyRole.ACCESS_COPY));

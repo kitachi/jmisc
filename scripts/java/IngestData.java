@@ -30,11 +30,29 @@ import models.Thing;
 import models.ThingDescription;
 import models.ThingFile;
 
+import java.io.IOException;
+import java.util.Iterator;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
+
+import com.sun.media.imageio.plugins.tiff.TIFFDirectory;
+import com.sun.media.imageio.plugins.tiff.TIFFField;
+import com.sun.media.imageio.plugins.tiff.TIFFTag;
+import com.sun.media.jai.codec.FileSeekableStream;
+import com.sun.media.jai.codec.ImageCodec;
+import com.sun.media.jai.codec.ImageDecoder;
+
 // TODO:  look at ThingDescription class
 // TODO:  look at SDB's img lib jars
 public class IngestData {
-    public static boolean LOG_INGEST = true;
-    public static boolean SKIP_INGEST = false;
+    public static final boolean LOG_INGEST = true;
+    public static final boolean SKIP_INGEST = false;
+    public static final String CHECKSUM_SHA1 = "SHA1";
 
     protected Long jobId;
     protected String collectionArea = "";
@@ -93,6 +111,25 @@ public class IngestData {
             Thing file = createFile(entry, copyRole, copy);
         }
         return work;
+    }
+    
+    /**
+     * @pre-req: pages must be ingested before articles does.
+     * @param parent
+     * @param article
+     * @param link
+     * @param desc
+     * @param relOrder
+     * @return
+     * @throws JsonGenerationException
+     * @throws JsonMappingException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     */
+    public synchronized Thing createJellyItem(Thing parent, IngestArticle article, String link,
+            ThingDescription desc, int relOrder) throws JsonGenerationException, JsonMappingException,
+            NoSuchAlgorithmException, IOException {
+        // TODO: relate article to pages
     }
 
     public synchronized Thing createWork(IngestEntry entry, Thing parent, String link,
@@ -176,11 +213,11 @@ public class IngestData {
         file.description = new ObjectMapper().writeValueAsBytes(node);
         file.save();
         
-        // Todo fileLocation
+        // fileLocation
         FileLocation location = new FileLocation();
         location.id = file.id;
         
-        if ((copyRole == Thing.CopyRole.ACCESS_COPY) || (copyRole == Thing.CopyRole.METS_JSON_COPY) || (copyRole == Thing.CopyRole.OCR_JSON_COPY))
+        if ((copyRole == Thing.CopyRole.ACCESS_COPY) || (copyRole == Thing.CopyRole.OCR_JSON_COPY))
             location.fileLocation = entry.getFilePath(dlirStore.resolve("derivative").toString(), topPI, copyRole);
         else 
             location.fileLocation = entry.getFilePath(dlirStore.resolve("master").toString(), topPI, copyRole);  
@@ -239,11 +276,10 @@ public class IngestData {
         for (File file : files) {
             // System.out.println("file: " + file.getName());
             
-            //TODO: get the following from the IngestMetsHelper
-            //       - copyrole (ac, m, oc, at, mt)
-            //       - filename
-            //       - relative location
-            //       - height, width for images
+            //Note: the following values will be extracted from the IngestMetsHelper
+        	//       - checksum type and file checksum if exist
+            //       - height in pixel, width in pixel, ocr measurement unit, xres, yres for tiff images
+        	//       - height in pixel, width in pixel for jp2 images will have the same value as per tiff
             //       - page order
             IngestEntry entry = new IngestEntry();
             entry.ts = ts;
@@ -252,11 +288,8 @@ public class IngestData {
             IngestImg acFile = new IngestImg();
             acFile.fileName = file.getName();
             acFile.fileSize = file.length();
-            acFile.checkSum = checksum(file);
-            // get image height and width
-            // BufferedImage source = ImageIO.read(file);
-            acFile.width = 2265; // source.getWidth();
-            acFile.height = 2978; // source.getHeight();
+            // acFile.checkSum = checksum(file);
+
             entry.entryData.put(Thing.CopyRole.ACCESS_COPY, acFile);
             
             Path masterSrcPath = Paths.get(srcDirs[Thing.CopyRole.MASTER_COPY.idx()]);
@@ -265,7 +298,7 @@ public class IngestData {
                 IngestImg mFile = new IngestImg();
                 mFile.fileName = file.getName().replace(".jp2", ".tif");
                 mFile.fileSize = masterSrcPath.resolve(mFile.fileName).toFile().length();
-                mFile.checkSum = checksum(masterSrcPath.resolve(mFile.fileName).toFile());
+                // mFile.checkSum = checksum(masterSrcPath.resolve(mFile.fileName).toFile());
                 mFile.width = acFile.width;
                 mFile.height = acFile.height;
                 entry.entryData.put(Thing.CopyRole.MASTER_COPY, mFile);
@@ -279,8 +312,8 @@ public class IngestData {
                 atFile.fileName = file.getName().replace(".jp2", ".xml");
                 atFile.fileSize = atSrcPath.resolve(atFile.fileName).toFile()
                         .length();
-                atFile.checkSum = checksum(atSrcPath.resolve(atFile.fileName)
-                        .toFile());
+                // atFile.checkSum = checksum(atSrcPath.resolve(atFile.fileName)
+                //        .toFile());
                 entry.entryData.put(Thing.CopyRole.OCR_ALTO_COPY, atFile);
             }
 
@@ -294,8 +327,8 @@ public class IngestData {
                 ocFile.fileName = file.getName().replace(".jp2", ".json.gz");
                 ocFile.fileSize = ocSrcPath.resolve(ocFile.fileName).toFile()
                         .length();
-                ocFile.checkSum = checksum(ocSrcPath.resolve(ocFile.fileName)
-                        .toFile());
+                // ocFile.checkSum = checksum(ocSrcPath.resolve(ocFile.fileName)
+                //        .toFile());
                 entry.entryData.put(Thing.CopyRole.OCR_JSON_COPY, ocFile);
             }
             
@@ -331,4 +364,6 @@ public class IngestData {
         // TODO Auto-generated method stub
         return collectionArea;
     }
+    
+    
 }

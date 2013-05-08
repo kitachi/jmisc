@@ -12,6 +12,7 @@ import models.IngestParams;
 import models.Thing;
 import models.ThingDescription;
 import models.ThingNotFoundException;
+import models.ingest.IngestArticle;
 import models.ingest.IngestData;
 import models.ingest.IngestEntry.ThingSubType;
 import models.ingest.IngestEntry;
@@ -54,13 +55,19 @@ public class JournalIngestHelper {
         }   
     }
     
-    public synchronized static void ingest(String titlePI, String metspath, IngestParams ingestParams) throws IngestException, NoSuchAlgorithmException, IOException {
+//    private synchronized static void ingest(String titlePI, String metspath, IngestParams ingestParams, ObjectNode mets) {
+//    	if () {
+//    		
+//    	}
+//    }
+    
+    public synchronized static void ingest(String titlePI, String metspath, IngestParams ingestParams, ObjectNode mets) throws IngestException, NoSuchAlgorithmException, IOException {
         Thing journalTitle;
         String collectionArea = "nla.news";
         
         try {
             journalTitle = Thing.findByPI.byId(titlePI);
-            ingest(metspath, ingestParams, collectionArea, journalTitle, IngestEntry.ThingSubType.ISSUE);
+            ingest(metspath, ingestParams, collectionArea, journalTitle, IngestEntry.ThingSubType.ISSUE, mets);
         } catch (ThingNotFoundException ex) {
             throw new IngestException(ex.getLocalizedMessage());
         }
@@ -68,17 +75,17 @@ public class JournalIngestHelper {
 
     }
     
-    protected synchronized static void ingest(String metspath, IngestParams ingestParams, String collectionArea, Thing topItem, IngestEntry.ThingSubType ingestType) throws IngestException {
+    protected synchronized static void ingest(String metspath, IngestParams ingestParams, String collectionArea, Thing topItem, IngestEntry.ThingSubType ingestType, ObjectNode mets) throws IngestException {
         try {
             Ebean.beginTransaction();
-            String ts = IngestUnion.getTimestamp();
+            String ts = ingestParams.ts;
             // Path metsPath = Paths.get(IngestUnion.DLIR_FS_WORKING).resolve(ingestParams.pi);
             Path metsPath = Paths.get(metspath);
             Path dlirStoragePath = Paths.get(IngestUnion.DLIR_FS_BASE);
             IngestMETS data = new IngestMETS(dlirStoragePath, ingestParams.pi, metsPath, ts);
             data.setCollectionArea(collectionArea);
 
-            List<IngestEntry> entries = data.validateIngestData(ingestType);            
+            List<IngestEntry> entries = data.validateIngestData(ingestType, mets);            
             if (entries != null) {
                 JellyGraph ingestGraph = data.getMetadataGraph();
                 String jobName = "ingest " + ingestParams.pi;
@@ -94,18 +101,30 @@ public class JournalIngestHelper {
             
                 Thing parent = topItem;
                 int relOrder = 1;
+                String pageLink = "";
                 for (IngestEntry entry : entries) {
+                    Thing work;
                     if (entry.parentEntry() != null) {
-                        parent = Thing.findByPI.byId(entry.parentEntry().pi());
+                        parent = Thing.find.byId(entry.parentEntry().getId());
                     }
                     ThingDescription desc;
                     if (entry.getEntryType() == IngestEntry.ThingSubType.PAGE) {
                         desc = desc(ingestParams.title, ingestParams.creator, entry.pi(), relOrder);
-                    } else {
+                        work = data.createJellyItem(parent, entry, pageLink, desc, relOrder);
+                    } else if (entry.getEntryType() == IngestEntry.ThingSubType.ARTICLE) {
+                        desc = null; // TODO: "??";
+                        work = data.createJellyItem(parent, (IngestArticle) entry, pageLink, desc, relOrder);        
+                    } else if (entry.getEntryType().existInJournal()){
                         desc = desc(ingestParams.title);
+                        String link = ingestParams.bibSrc + ":" + ingestParams.bibId;
+                        work = data.createJellyItem(parent, entry, link, desc, relOrder);
+                    } else {
+                        work = null;
+                        // TODO: log a invalid Thing subType error
                     }
-                        
-                    Thing work = data.createJellyItem(parent, entry, desc, relOrder);
+                    
+                    if (work != null)
+                        entry.setId(work.id);
                     relOrder++;
                 }
                 

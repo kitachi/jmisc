@@ -20,13 +20,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import models.ingest.IngestEntry.ThingSubType;
 import nu.xom.Document;
 import nu.xom.Element;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
@@ -41,20 +42,19 @@ import com.avaje.ebean.Query;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
 import com.avaje.ebean.SqlRow;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "dlThing")
-public class Thing extends Model {
+public class Thing extends Model implements AbstractThing {
     public static enum ThingType {
         WORK, COPY, FILE
     }
     
     public static enum ThingRelationship {
-        ISPARTOF, ISCOPYOF, ISFILEOF;
+        ISPARTOF, ISCOPYOF, ISFILEOF, EXISTIN;
 
         public int code() {
             return this.ordinal() + 1;
@@ -87,7 +87,7 @@ public class Thing extends Model {
     }
     
     public static final String ACCESS_COPY = "ac";
-
+    
     public static Finder<Long, Thing> find = new Finder<Long, Thing>(
             Long.class, Thing.class);
 
@@ -108,6 +108,8 @@ public class Thing extends Model {
     };
 
     public static final String OCR_COPY = "oc";
+    
+    public static final ObjectMapper jsonMapper = new ObjectMapper();
 
     @Transient
     public String _description;
@@ -131,7 +133,7 @@ public class Thing extends Model {
 
     @Column(name = "oldId")
     public String oldId;
-    
+
     @Column(name = "pi")
     public String pi;
 
@@ -390,25 +392,22 @@ public class Thing extends Model {
     }
 
     public String getParseDescriptionInHtml(boolean skipEmptyFields) {
-        String desc = getDescription();
-        JsonObject descJson = gu.parseJson(desc);
-        if (descJson != null) {
+        Map<String, Object> obj = gu.parseJsonObject(getDescription());
+        if (obj != null) {
             StringBuilder sb = new StringBuilder();
-            for (Iterator<Entry<String, JsonElement>> ir = descJson.entrySet()
-                    .iterator(); ir.hasNext();) {
-                Entry<String, JsonElement> entry = ir.next();
-                String val = entry.getValue().getAsString();
-                if (!skipEmptyFields || !"".equals(val)) {
+            for (Entry<String, Object> entry : obj.entrySet()) {
+                String value = (String) Objects.firstNonNull(entry.getValue(), "").toString();
+                if (!skipEmptyFields || !value.equals("")) {
                     if (sb.length() > 0) {
                         sb.append("<br/>");
                     }
                     sb.append("<em>" + escapeHtml(entry.getKey()) + "</em>: "
-                            + escapeHtml(val));
+                            + escapeHtml(value));
                 }
             }
             return sb.toString();
         } else {
-            return desc;
+            return null;
         }
     }
 
@@ -437,15 +436,11 @@ public class Thing extends Model {
     }
 
     public String getTitleFromDescription() {
-        JsonObject descJson = gu.parseJson(getDescription());
-        String s = null;
-        if (descJson != null) {
-            JsonElement el = descJson.get("title");
-            if (el != null) {
-                s = el.getAsString();
-            }
+        try {
+            return (String) gu.parseJsonObject(getDescription()).get("title");
+        } catch (NullPointerException e) {
+            return null;
         }
-        return s;
     }
 
     public String getType() {
@@ -566,26 +561,20 @@ public class Thing extends Model {
         Document doc = new Document(getElement("item", withChildren));
         return doc.toXML();
     }
-
+    
     public void updateChildrenWithOrderFromJson(String jsonTxt) {
-        JsonParser jsParser = new JsonParser();
-        JsonElement jsEl = jsParser.parse(jsonTxt);
-        if (jsEl instanceof JsonObject) {
+        Map<String,Object> obj = gu.parseJsonObject(jsonTxt);
             String updateSql = "update dlRelationship set relOrder = ? where thing1Id = ? and relationship = ? and thing2Id = ?";
             String insertSql = "insert into dlRelationship (thing1Id, relationship, thing2Id, relOrder) values (?, ?, ?, ?)";
-            JsonObject jsObj = (JsonObject) jsEl;
-            for (Iterator<Entry<String, JsonElement>> ir = jsObj.entrySet()
-                    .iterator(); ir.hasNext();) {
-                Entry<String, JsonElement> entry = ir.next();
+            for (Entry<String, Object> entry : obj.entrySet()) {
                 String key = entry.getKey();
-                String val = entry.getValue().getAsString();
+                String val = entry.getValue().toString();
                 int cnt = du.executeUpdate(updateSql, val, key, 1, id);
                 if (cnt == 0) {
                     // Try insert
                     cnt = du.executeUpdate(insertSql, key, 1, id, val);
                 }
             }
-        }
     }
     
     public synchronized void updateDescription(ThingDescription desc) throws JsonGenerationException, JsonMappingException, IOException {
@@ -784,5 +773,28 @@ public class Thing extends Model {
             node.put("groups", sb.toString());
         }
         return node;
+    }
+
+    public Long getInternalId() {
+        return getId();
+    }
+
+    public String getPI() {
+        return oldId;
+    }
+
+    public String getSubType() {
+        return subType;
+    }
+
+    public List<AbstractThing> getFlattenedAncestorLineages() {
+        List<AbstractThing> flattenedLineages = new ArrayList<AbstractThing>();
+        List<List<Thing>> ancestors = getAncestors();
+        for (List<Thing> lineage : ancestors) {
+            for (Thing ancestor : lineage) {   
+                flattenedLineages.add(ancestor);
+            }
+        } 
+        return flattenedLineages;
     }
 }
