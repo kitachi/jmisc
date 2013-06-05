@@ -1,0 +1,41 @@
+METS Java Toolkit, Version 1.5.2, 2006-07-03
+Copyright (c) 2003-2006 by the President and Fellows of Harvard College
+The METS Java Toolkit is made available under the GNU Lesser General Public
+License (see the file LICENSE for details)
+
+This version of the toolkit is based on METS Version 1.5 (2005-04-12).
+The METS specification was developed as an initiative of the Digital
+Library Federation <http://www.diglib.org> and is maintained by the
+Network Development and MARC Standards Office of the Library of
+Congress <http://www.loc.gov/standards/mets/>.
+
+mets/
+     COPYING                          # GNU Lesser General Public License
+     LICENSE                          # METS Java Toolkit license information
+     Makefile
+     README                           # This file
+     RELEASE                          # Release notes
+     bin/                             # METS toolkit Jar file
+              mets.jar
+     classes/                         # Source and class file tree
+              edu/harvard/hul/ois/mets/
+                                       Makefile
+                                       *.java
+                                       helper/
+                                              Makefile
+                                              *.java
+                                              parser/
+                                                     Makefile
+                                                     *.java
+     doc/                             # Javadoc
+              *.html
+     examples/                        # Examples
+              Makefile
+              Copy.java
+              Write.java
+     lib/ ...                         # This directory tree is empty
+     src/ ...                         # This directory tree is empty
+
+
+NOTE: The empty lib/ and src/ directory trees are present to conform to
+standard Harvard University Library development guidelines.

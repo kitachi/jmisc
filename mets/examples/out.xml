@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<mets OBJID="254933" LABEL="Bangs, Outram and James L. Peters. 1928. Birds Collected by Dr. Joseph Rock...." TYPE="citationleaf" PROFILE="PDS" xmlns="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd">
+ <metsHdr CREATEDATE="2005-03-04T10:17:24" RECORDSTATUS="Production">
+  <agent ROLE="DISSEMINATOR" TYPE="OTHER" OTHERTYPE="depositingAgent">
+   <name>HCL DIG</name>
+   <note>Depositing on behalf of Arnold Arboretum</note>
+  </agent>
+  <altRecordID TYPE="NRS">nrs:fhcl:1234567890</altRecordID>
+ </metsHdr>
+ <dmdSec ID="254933">
+  <mdWrap MIMETYPE="text/xml" MDTYPE="DC">
+   <xmlData xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:title>Birds <a:b>Collected by</a:b> Dr. Joseph Rock....</dc:title>
+    <dc:author>Bangs, Outram</dc:author>
+   </xmlData>
+  </mdWrap>
+ </dmdSec>
+ <amdSec>
+  <sourceMD ID="254933-source">
+   <mdWrap MIMETYPE="text/xml" MDTYPE="DC">
+    <xmlData xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:source>Bulletin of the the Museum of Comparative Zoology at Harvard College 68(7): 311-381. 1928</dc:source></xmlData>
+   </mdWrap>
+  </sourceMD>
+ </amdSec>
+ <fileSec>
+  <fileGrp>
+   <file ID="254792" MIMETYPE="plain/text" GROUPID="254933-1">
+    <FLocat LOCTYPE="OTHER" OTHERLOCTYPE="DRS" xlink:type="simple" xlink:href="254792"/>
+   </file>
+   <file ID="254794" MIMETYPE="plain/text" GROUPID="254933-2">
+    <FLocat LOCTYPE="OTHER" OTHERLOCTYPE="DRS" xlink:type="simple" xlink:href="254794"/>
+   </file>
+  </fileGrp>
+  <fileGrp>
+   <file ID="254791" MIMETYPE="image/tiff" GROUPID="254933-1">
+    <FLocat LOCTYPE="OTHER" OTHERLOCTYPE="DRS" xlink:type="simple" xlink:href="254791"/>
+   </file>
+   <file ID="254793" MIMETYPE="image/tiff" GROUPID="254933-2">
+    <FLocat LOCTYPE="OTHER" OTHERLOCTYPE="DRS" xlink:type="simple" xlink:href="254793"/>
+   </file>
+  </fileGrp>
+ </fileSec>
+ <structMap TYPE="LOGICAL">
+  <div ORDER="1" LABEL="Bangs, Outram and James L. Peters. 1928. Birds collected by Dr. Joseph Rock...." DMDID="254933" TYPE="article">
+   <div ORDER="1" ORDERLABEL="311" LABEL=", page 311" TYPE="page">
+    <fptr FILEID="254792"/>
+    <fptr FILEID="254791"/>
+   </div>
+   <div ORDER="2" ORDERLABEL="312" LABEL=", page 312" TYPE="page">
+    <fptr FILEID="254794"/>
+    <fptr FILEID="254793"/>
+   </div>
+  </div>
+ </structMap>
+</mets>

@@ -1,0 +1,101 @@
+For Release 1.5.2 (2006-07-03)
+------------------------------
+
+* Add the PREMIS metadata enumeration type [OIS bug #1530]
+* Permit empty elements to be serialized with end tags [OIS bug #1531]
+
+For Release 1.5.1 (2006-04-03)
+------------------------------
+
+* Conformance with METS 1.4 and 1.5 schemas [OIS bug #1379, 1380]
+* Permit reading of an empty <fileGrp/> element [OIS bug #1378]
+* Correct bug reading <Area> element [OIS bug #1378]
+
+For Release 1.3.9 (2005-11-29)
+------------------------------
+
+* Enforce a single name/value pair for attributes of type IDREF [OIS bug #1231]
+  (Affecting the Area, Fptr, and SmLink classes)
+
+For Release 1.3.8 (2005-09-26)
+------------------------------
+
+* Correct error with ID/IDREF validation [OIS bug #1101]
+* Use fully package-qualified references to
+  edu.harvard.hul.ois.mets.helper.Enum to avoid namespace collision with the
+  standard Java Enum class [OIS bug #1110]
+
+For Release 1.3.7 (2005-07-28)
+------------------------------
+
+* Add option to suppress the XML declaration [OIS bug #989]. New method:
+    Mets.writer(MetsWriter w, boolean noXmlDecl);
+* Add options to suppress the METS, XLink, and XSI namespaces and schemas
+  from appearing in the <mets> element [OIS bug #989]. New constructor and
+  method:
+    Mets.Mets(boolean noSchema);
+    Mets.reader(MetsReader r, boolean noSchema);
+
+For Release 1.3.6 (2005-06-24)
+------------------------------
+
+* Allow entity and character references to appear anywhere in attribute
+  values or PCDATA, including the initial character position [OIS bug #923]
+
+For Release 1.3.5 (2005-04-29)
+------------------------------
+* correct bug reading entity references in MetsReader.getText () [OIS bug #723]
+
+For Release 1.3.4 (2005-03-04)
+------------------------------
+* enhancement [OIS bug #568] to add "no escape" versions of the
+  MetsWriter.attribute() and attributeValue() methods, to permit specification
+  of attributes with pre-escaped text values
+
+For Release 1.3.3 (2005-01-21)
+------------------------------
+* bug fix [OIS bug #175] decode method in Base64 class now handles whitespace
+  accurately
+* allow namespace declarations by all relevant elements (e.g., <mets>,
+  <dmdSec>, <amdSec>, <techMD>, <rightsMD>, <sourceMD>, <digiprovMD>, <mdWrap>,
+  <fileSec>, <fileGrp>, <file>, <FContent>, <xmlData>
+* use the "official" XLink namespace URI <http://www.w3.org/1999/xlink> rather
+  than the URI defined in the METS schema
+
+For Release 1.3.2 (2004-07-06)
+------------------------------
+* bug fix [OIS bug #156] to allow arbitrary number of <smLink> elements
+  in the content model of <structLink>
+* bug fix [OIS bug #157]: invalid use of OTHERTYPE, OTHERMDTYPE, OTHERLOCTYPE,
+  etc. attributes does *not* cause the throwing of an exception, only the
+  display of a warning message to standard error; this is a violation of the
+  informal METS semantics but not of the METS schema (since this is not
+  a condition that can be represented in Schema)
+* bug fix [OIS bug #158] to deal with sequences of empty <Div> siblings
+* bug fix [OIS bug #169] to deal with all element and attribute namespaces
+  properly
+
+For Release 1.3.1 (2004-05-04)
+------------------------------
+* ability to add additional namespace-qualified schema definitions to the
+  top-level <mets> element
+* added File.setCHECKSUMTYPE() method
+* removed requirement for ID attributes by MdSec elements
+* ability to incorporate arbitrary XML (unvalidated, unsescaped) into a
+  METS file
+* change license terms to the GNU Lesser General Public License
+
+For Release 1.3.0 (2004-03-19)
+------------------------------
+* updated xlink href in Mets.java to match href in METS schema
+* bug fix [OIS bug #11] when reading empty xml tags in Any.java
+* added support for writing binary data with MetsWriter
+* added decode() method to Base64.java
+* conform to METS v1.3 (2003-05-05)
+  - add MODS to MDTYPE
+  - modify <file> attributes so that instead of just CHECKSUM we have
+    CHECKSUM and CHECKSUMTYPE, where CHECKSUMTYPE is a controlled
+    vocabulary as follows: HAVAL, MD5, SHA-1, SHA-256, SHA-384, SHA-512,
+    TIGER, WHIRLPOOL
+  - alter BehaviorSec to make it recursive, and add a new behavior
+    element to wrap mechanism and interfaceDef elements

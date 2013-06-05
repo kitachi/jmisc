@@ -1,0 +1,20 @@
+METS Java toolkit examples
+Copyright (c) 2003-2005 by the President and Fellows of Harvard College
+
+The three example applications, Write, Validate, and Copy, can be tested as
+follows:
+
+  Makefile
+  java -classpath .:../bin/mets.jar Write  > out.xml
+  java -classpath .:../bin/mets.jar Validate out.xml
+  java -classpath .:../bin/mets.jar Copy     out.xml > copy.xml
+  diff out.xml copy.xml
+
+The Write application procedurally creates an in-memory representation
+of a METS file and then serializes it out to standard output.
+
+The Copy application de-serializes an existing METS file into an
+in-memory representation and then serializes it out to standard output.
+
+The METS files created by both applications, out.xml and copy.xml,
+should be identical.
