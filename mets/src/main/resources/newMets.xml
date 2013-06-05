@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<mets xmlns="http://www.loc.gov/METS/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-2b.xsd http://www.loc.gov/standards/premis/v1 http://www.loc.gov/standards/premis/v1/PREMIS-v1-1.xsd"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:mods="http://www.loc.gov/mods/v3"
+	xmlns:mets="http://www.loc.gov/METS/" xmlns:premis="http://www.loc.gov/standards/premis">
+ <mets:metsHdr CREATEDATE="2011-01-22T08:14:29" LASTMODDATE="2011-01-22T08:14:29">
+  <mets:agent ROLE="DISSEMINATOR">
+   <mets:name>Apex CoVantage</mets:name>
+  </mets:agent>
+  <mets:agent ROLE="CREATOR">
+   <mets:name>IZ-Deliver4182 v1.43</mets:name>
+  </mets:agent>
+ </mets:metsHdr>
+ <mets:dmdSec ID="issue-nla.aus-issn00050458_19500225">
+  <mets:mdWrap MDTYPE="MODS">
+   <mets:xmlData>
+    <mods:mods xmlns="http://www.loc.gov/mods/v3">
+					<mods:genre>newspaper issue</mods:genre>
+					<mods:language>
+						<mods:languageTerm type="code" authority="rfc3066">en</mods:languageTerm>
+					</mods:language>
+					<mods:originInfo>
+						<mods:dateIssued>19500225</mods:dateIssued>
+					</mods:originInfo>
+					<mods:relatedItem type="host">
+						<mods:titleInfo>
+							<mods:title>The Australian Women's Weekly</mods:title>
+						</mods:titleInfo>
+						<mods:genre>newspaper</mods:genre>
+						<mods:identifier>ISSN00050458</mods:identifier>
+						<mods:part>
+							<mods:detail type="volume">
+								<mods:number>17</mods:number>
+							</mods:detail>
+						</mods:part>
+						<mods:part>
+							<mods:detail type="issue">
+								<mods:number>38</mods:number>
+							</mods:detail>
+						</mods:part>
+					</mods:relatedItem>
+				</mods:mods>
+   </mets:xmlData>
+  </mets:mdWrap>
+ </mets:dmdSec>
+ <amdSec xmlns:mets="http://www.loc.gov/METS/" xsi:schemaLocation="http://www.loc.gov/METS/ mets:amdSec">
+  <mets:techMD ID="PREMISOBJECT1">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:object>
+						<premis:objectIdentifier>
+							<premis:objectIdentifierType>National Library of Australia
+							</premis:objectIdentifierType>
+							<premis:objectIdentifierValue>nlaImageSeq-4310810-c.tif
+							</premis:objectIdentifierValue>
+						</premis:objectIdentifier>
+						<premis:objectCategory>file</premis:objectCategory>
+						<premis:objectCharacteristics>
+							<premis:format>
+								<premis:formatDesignation>
+									<premis:formatName>TIFF</premis:formatName>
+									<premis:formatVersion>TIFF 6.0</premis:formatVersion>
+								</premis:formatDesignation>
+							</premis:format>
+						</premis:objectCharacteristics>
+						<premis:relationship>
+							<premis:relationshipType>derivation</premis:relationshipType>
+							<premis:relationshipSubType>is derivative of
+							</premis:relationshipSubType>
+							<premis:relatedObjectIdentification>
+								<premis:relatedObjectIdentifierType>National Library of
+									Australia
+								</premis:relatedObjectIdentifierType>
+								<premis:relatedObjectIdentifierValue>nlaImageSeq-4310810-c.tif
+								</premis:relatedObjectIdentifierValue>
+								<premis:relatedObjectSequence>0</premis:relatedObjectSequence>
+							</premis:relatedObjectIdentification>
+							<premis:relatedEventIdentification>
+								<premis:relatedEventIdentifierType>National Library of Australia
+								</premis:relatedEventIdentifierType>
+								<premis:relatedEventIdentifierValue>deskew-nlaImageSeq-4310810-c.tif
+								</premis:relatedEventIdentifierValue>
+								<premis:relatedEventSequence>0</premis:relatedEventSequence>
+							</premis:relatedEventIdentification>
+						</premis:relationship>
+					</premis:object>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:techMD>
+  <mets:techMD ID="PREMISOBJECT2">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:object>
+						<premis:objectIdentifier>
+							<premis:objectIdentifierType>National Library of Australia
+							</premis:objectIdentifierType>
+							<premis:objectIdentifierValue>nlaImageSeq-4310811-c.tif
+							</premis:objectIdentifierValue>
+						</premis:objectIdentifier>
+						<premis:objectCategory>file</premis:objectCategory>
+						<premis:objectCharacteristics>
+							<premis:format>
+								<premis:formatDesignation>
+									<premis:formatName>TIFF</premis:formatName>
+									<premis:formatVersion>TIFF 6.0</premis:formatVersion>
+								</premis:formatDesignation>
+							</premis:format>
+						</premis:objectCharacteristics>
+						<premis:relationship>
+							<premis:relationshipType>derivation</premis:relationshipType>
+							<premis:relationshipSubType>is derivative of
+							</premis:relationshipSubType>
+							<premis:relatedObjectIdentification>
+								<premis:relatedObjectIdentifierType>National Library of
+									Australia
+								</premis:relatedObjectIdentifierType>
+								<premis:relatedObjectIdentifierValue>nlaImageSeq-4310811-c.tif
+								</premis:relatedObjectIdentifierValue>
+								<premis:relatedObjectSequence>0</premis:relatedObjectSequence>
+							</premis:relatedObjectIdentification>
+							<premis:relatedEventIdentification>
+								<premis:relatedEventIdentifierType>National Library of Australia
+								</premis:relatedEventIdentifierType>
+								<premis:relatedEventIdentifierValue>deskew-nlaImageSeq-4310811-c.tif
+								</premis:relatedEventIdentifierValue>
+								<premis:relatedEventSequence>0</premis:relatedEventSequence>
+							</premis:relatedEventIdentification>
+						</premis:relationship>
+					</premis:object>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:techMD>
+  <mets:techMD ID="PREMISOBJECT3">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:object>
+						<premis:objectIdentifier>
+							<premis:objectIdentifierType>National Library of Australia
+							</premis:objectIdentifierType>
+							<premis:objectIdentifierValue>nlaImageSeq-4310812-c.tif
+							</premis:objectIdentifierValue>
+						</premis:objectIdentifier>
+						<premis:objectCategory>file</premis:objectCategory>
+						<premis:objectCharacteristics>
+							<premis:format>
+								<premis:formatDesignation>
+									<premis:formatName>TIFF</premis:formatName>
+									<premis:formatVersion>TIFF 6.0</premis:formatVersion>
+								</premis:formatDesignation>
+							</premis:format>
+						</premis:objectCharacteristics>
+						<premis:relationship>
+							<premis:relationshipType>derivation</premis:relationshipType>
+							<premis:relationshipSubType>is derivative of
+							</premis:relationshipSubType>
+							<premis:relatedObjectIdentification>
+								<premis:relatedObjectIdentifierType>National Library of
+									Australia
+								</premis:relatedObjectIdentifierType>
+								<premis:relatedObjectIdentifierValue>nlaImageSeq-4310812-c.tif
+								</premis:relatedObjectIdentifierValue>
+								<premis:relatedObjectSequence>0</premis:relatedObjectSequence>
+							</premis:relatedObjectIdentification>
+							<premis:relatedEventIdentification>
+								<premis:relatedEventIdentifierType>National Library of Australia
+								</premis:relatedEventIdentifierType>
+								<premis:relatedEventIdentifierValue>deskew-nlaImageSeq-4310812-c.tif
+								</premis:relatedEventIdentifierValue>
+								<premis:relatedEventSequence>0</premis:relatedEventSequence>
+							</premis:relatedEventIdentification>
+						</premis:relationship>
+					</premis:object>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:techMD>
+  <mets:techMD ID="PREMISOBJECT4">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:object>
+						<premis:objectIdentifier>
+							<premis:objectIdentifierType>National Library of Australia
+							</premis:objectIdentifierType>
+							<premis:objectIdentifierValue>nlaImageSeq-4310813-c.tif
+							</premis:objectIdentifierValue>
+						</premis:objectIdentifier>
+						<premis:objectCategory>file</premis:objectCategory>
+						<premis:objectCharacteristics>
+							<premis:format>
+								<premis:formatDesignation>
+									<premis:formatName>TIFF</premis:formatName>
+									<premis:formatVersion>TIFF 6.0</premis:formatVersion>
+								</premis:formatDesignation>
+							</premis:format>
+						</premis:objectCharacteristics>
+						<premis:relationship>
+							<premis:relationshipType>derivation</premis:relationshipType>
+							<premis:relationshipSubType>is derivative of
+							</premis:relationshipSubType>
+							<premis:relatedObjectIdentification>
+								<premis:relatedObjectIdentifierType>National Library of
+									Australia
+								</premis:relatedObjectIdentifierType>
+								<premis:relatedObjectIdentifierValue>nlaImageSeq-4310813-c.tif
+								</premis:relatedObjectIdentifierValue>
+								<premis:relatedObjectSequence>0</premis:relatedObjectSequence>
+							</premis:relatedObjectIdentification>
+							<premis:relatedEventIdentification>
+								<premis:relatedEventIdentifierType>National Library of Australia
+								</premis:relatedEventIdentifierType>
+								<premis:relatedEventIdentifierValue>deskew-nlaImageSeq-4310813-c.tif
+								</premis:relatedEventIdentifierValue>
+								<premis:relatedEventSequence>0</premis:relatedEventSequence>
+							</premis:relatedEventIdentification>
+						</premis:relationship>
+					</premis:object>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:techMD>
+  <mets:techMD ID="PREMISOBJECT61">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:object>
+						<premis:objectIdentifier>
+							<premis:objectIdentifierType>National Library of Australia
+							</premis:objectIdentifierType>
+							<premis:objectIdentifierValue>nlaImageSeq-4310810-c.xml
+							</premis:objectIdentifierValue>
+						</premis:objectIdentifier>
+						<premis:objectCategory>file</premis:objectCategory>
+						<premis:objectCharacteristics>
+							<premis:format>
+								<premis:formatDesignation>
+									<premis:formatName>XML ALTO</premis:formatName>
+									<premis:formatVersion>ALTO schema Version 1.1-04
+									</premis:formatVersion>
+								</premis:formatDesignation>
+							</premis:format>
+						</premis:objectCharacteristics>
+						<premis:relationship>
+							<premis:relationshipType>derivation</premis:relationshipType>
+							<premis:relationshipSubType>is derivative of
+							</premis:relationshipSubType>
+							<premis:relatedObjectIdentification>
+								<premis:relatedObjectIdentifierType>National Library of
+									Australia
+								</premis:relatedObjectIdentifierType>
+								<premis:relatedObjectIdentifierValue>nlaImageSeq-4310810-c.tif
+								</premis:relatedObjectIdentifierValue>
+								<premis:relatedObjectSequence>0</premis:relatedObjectSequence>
+							</premis:relatedObjectIdentification>
+						</premis:relationship>
+					</premis:object>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:techMD>
+  <mets:techMD ID="PREMISOBJECT62">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:object>
+						<premis:objectIdentifier>
+							<premis:objectIdentifierType>National Library of Australia
+							</premis:objectIdentifierType>
+							<premis:objectIdentifierValue>nlaImageSeq-4310811-c.xml
+							</premis:objectIdentifierValue>
+						</premis:objectIdentifier>
+						<premis:objectCategory>file</premis:objectCategory>
+						<premis:objectCharacteristics>
+							<premis:format>
+								<premis:formatDesignation>
+									<premis:formatName>XML ALTO</premis:formatName>
+									<premis:formatVersion>ALTO schema Version 1.1-04
+									</premis:formatVersion>
+								</premis:formatDesignation>
+							</premis:format>
+						</premis:objectCharacteristics>
+						<premis:relationship>
+							<premis:relationshipType>derivation</premis:relationshipType>
+							<premis:relationshipSubType>is derivative of
+							</premis:relationshipSubType>
+							<premis:relatedObjectIdentification>
+								<premis:relatedObjectIdentifierType>National Library of
+									Australia
+								</premis:relatedObjectIdentifierType>
+								<premis:relatedObjectIdentifierValue>nlaImageSeq-4310811-c.tif
+								</premis:relatedObjectIdentifierValue>
+								<premis:relatedObjectSequence>0</premis:relatedObjectSequence>
+							</premis:relatedObjectIdentification>
+						</premis:relationship>
+					</premis:object>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:techMD>
+  <mets:techMD ID="PREMISOBJECT63">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:object>
+						<premis:objectIdentifier>
+							<premis:objectIdentifierType>National Library of Australia
+							</premis:objectIdentifierType>
+							<premis:objectIdentifierValue>nlaImageSeq-4310812-c.xml
+							</premis:objectIdentifierValue>
+						</premis:objectIdentifier>
+						<premis:objectCategory>file</premis:objectCategory>
+						<premis:objectCharacteristics>
+							<premis:format>
+								<premis:formatDesignation>
+									<premis:formatName>XML ALTO</premis:formatName>
+									<premis:formatVersion>ALTO schema Version 1.1-04
+									</premis:formatVersion>
+								</premis:formatDesignation>
+							</premis:format>
+						</premis:objectCharacteristics>
+						<premis:relationship>
+							<premis:relationshipType>derivation</premis:relationshipType>
+							<premis:relationshipSubType>is derivative of
+							</premis:relationshipSubType>
+							<premis:relatedObjectIdentification>
+								<premis:relatedObjectIdentifierType>National Library of
+									Australia
+								</premis:relatedObjectIdentifierType>
+								<premis:relatedObjectIdentifierValue>nlaImageSeq-4310812-c.tif
+								</premis:relatedObjectIdentifierValue>
+								<premis:relatedObjectSequence>0</premis:relatedObjectSequence>
+							</premis:relatedObjectIdentification>
+						</premis:relationship>
+					</premis:object>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:techMD>
+  <mets:techMD ID="PREMISOBJECT64">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:object>
+						<premis:objectIdentifier>
+							<premis:objectIdentifierType>National Library of Australia
+							</premis:objectIdentifierType>
+							<premis:objectIdentifierValue>nlaImageSeq-4310813-c.xml
+							</premis:objectIdentifierValue>
+						</premis:objectIdentifier>
+						<premis:objectCategory>file</premis:objectCategory>
+						<premis:objectCharacteristics>
+							<premis:format>
+								<premis:formatDesignation>
+									<premis:formatName>XML ALTO</premis:formatName>
+									<premis:formatVersion>ALTO schema Version 1.1-04
+									</premis:formatVersion>
+								</premis:formatDesignation>
+							</premis:format>
+						</premis:objectCharacteristics>
+						<premis:relationship>
+							<premis:relationshipType>derivation</premis:relationshipType>
+							<premis:relationshipSubType>is derivative of
+							</premis:relationshipSubType>
+							<premis:relatedObjectIdentification>
+								<premis:relatedObjectIdentifierType>National Library of
+									Australia
+								</premis:relatedObjectIdentifierType>
+								<premis:relatedObjectIdentifierValue>nlaImageSeq-4310813-c.tif
+								</premis:relatedObjectIdentifierValue>
+								<premis:relatedObjectSequence>0</premis:relatedObjectSequence>
+							</premis:relatedObjectIdentification>
+						</premis:relationship>
+					</premis:object>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:techMD>
+  <mets:digiprovMD ID="PREMISEVENT1">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:event>
+						<premis:eventIdentifier>
+							<premis:eventIdentifierType>National Library of Australia
+							</premis:eventIdentifierType>
+							<premis:eventIdentifierValue>deskew-nlaImageSeq-4310810-c.tif
+							</premis:eventIdentifierValue>
+						</premis:eventIdentifier>
+						<premis:eventType>deskew</premis:eventType>
+						<premis:eventDateTime>2011-01-22T08:02:13Z</premis:eventDateTime>
+						<premis:eventOutcomeInformation>
+							<premis:eventOutcome>filebase,nlaImageSeq-4310810-c.tif,skew,34,src,91a6c808c0962c22dac655ec01b99c25,check,6eab37428971b53082fc5dc04d898b85
+							</premis:eventOutcome>
+						</premis:eventOutcomeInformation>
+						<premis:linkingAgentIdentifier>
+							<premis:linkingAgentIdentifierType>National Library of Australia
+							</premis:linkingAgentIdentifierType>
+							<premis:linkingAgentIdentifierValue>DeskewingSoftware
+							</premis:linkingAgentIdentifierValue>
+						</premis:linkingAgentIdentifier>
+						<premis:linkingObjectIdentifier>
+							<premis:linkingObjectIdentifierType>National Library of Australia
+							</premis:linkingObjectIdentifierType>
+							<premis:linkingObjectIdentifierValue>nlaImageSeq-4310810-c.tif
+							</premis:linkingObjectIdentifierValue>
+						</premis:linkingObjectIdentifier>
+					</premis:event>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:digiprovMD>
+  <mets:digiprovMD ID="PREMISEVENT2">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:event>
+						<premis:eventIdentifier>
+							<premis:eventIdentifierType>National Library of Australia
+							</premis:eventIdentifierType>
+							<premis:eventIdentifierValue>deskew-nlaImageSeq-4310811-c.tif
+							</premis:eventIdentifierValue>
+						</premis:eventIdentifier>
+						<premis:eventType>deskew</premis:eventType>
+						<premis:eventDateTime>2011-01-22T08:02:15Z</premis:eventDateTime>
+						<premis:eventOutcomeInformation>
+							<premis:eventOutcome>filebase,nlaImageSeq-4310811-c.tif,skew,0,src,1cf36f45bb0b4c7475eca573ea816aee,check,44617d7b10ac5736065ddfbde600997d
+							</premis:eventOutcome>
+						</premis:eventOutcomeInformation>
+						<premis:linkingAgentIdentifier>
+							<premis:linkingAgentIdentifierType>National Library of Australia
+							</premis:linkingAgentIdentifierType>
+							<premis:linkingAgentIdentifierValue>DeskewingSoftware
+							</premis:linkingAgentIdentifierValue>
+						</premis:linkingAgentIdentifier>
+						<premis:linkingObjectIdentifier>
+							<premis:linkingObjectIdentifierType>National Library of Australia
+							</premis:linkingObjectIdentifierType>
+							<premis:linkingObjectIdentifierValue>nlaImageSeq-4310811-c.tif
+							</premis:linkingObjectIdentifierValue>
+						</premis:linkingObjectIdentifier>
+					</premis:event>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:digiprovMD>
+  <mets:digiprovMD ID="PREMISEVENT3">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:event>
+						<premis:eventIdentifier>
+							<premis:eventIdentifierType>National Library of Australia
+							</premis:eventIdentifierType>
+							<premis:eventIdentifierValue>deskew-nlaImageSeq-4310812-c.tif
+							</premis:eventIdentifierValue>
+						</premis:eventIdentifier>
+						<premis:eventType>deskew</premis:eventType>
+						<premis:eventDateTime>2011-01-22T08:02:16Z</premis:eventDateTime>
+						<premis:eventOutcomeInformation>
+							<premis:eventOutcome>filebase,nlaImageSeq-4310812-c.tif,skew,-18,src,acc79a61e80521b2d32f32e846401819,check,e50946ee21f1ae50928eeb122958cc37
+							</premis:eventOutcome>
+						</premis:eventOutcomeInformation>
+						<premis:linkingAgentIdentifier>
+							<premis:linkingAgentIdentifierType>National Library of Australia
+							</premis:linkingAgentIdentifierType>
+							<premis:linkingAgentIdentifierValue>DeskewingSoftware
+							</premis:linkingAgentIdentifierValue>
+						</premis:linkingAgentIdentifier>
+						<premis:linkingObjectIdentifier>
+							<premis:linkingObjectIdentifierType>National Library of Australia
+							</premis:linkingObjectIdentifierType>
+							<premis:linkingObjectIdentifierValue>nlaImageSeq-4310812-c.tif
+							</premis:linkingObjectIdentifierValue>
+						</premis:linkingObjectIdentifier>
+					</premis:event>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:digiprovMD>
+  <mets:digiprovMD ID="PREMISEVENT4">
+   <mets:mdWrap MDTYPE="PREMIS">
+    <mets:xmlData>
+     <premis:event>
+						<premis:eventIdentifier>
+							<premis:eventIdentifierType>National Library of Australia
+							</premis:eventIdentifierType>
+							<premis:eventIdentifierValue>deskew-nlaImageSeq-4310813-c.tif
+							</premis:eventIdentifierValue>
+						</premis:eventIdentifier>
+						<premis:eventType>deskew</premis:eventType>
+						<premis:eventDateTime>2011-01-22T08:02:17Z</premis:eventDateTime>
+						<premis:eventOutcomeInformation>
+							<premis:eventOutcome>filebase,nlaImageSeq-4310813-c.tif,skew,6,src,994f85e0b4d9f8faa3f07036c20721b4,check,7cc71c16e8c90d0df64196fe8b141e8f
+							</premis:eventOutcome>
+						</premis:eventOutcomeInformation>
+						<premis:linkingAgentIdentifier>
+							<premis:linkingAgentIdentifierType>National Library of Australia
+							</premis:linkingAgentIdentifierType>
+							<premis:linkingAgentIdentifierValue>DeskewingSoftware
+							</premis:linkingAgentIdentifierValue>
+						</premis:linkingAgentIdentifier>
+						<premis:linkingObjectIdentifier>
+							<premis:linkingObjectIdentifierType>National Library of Australia
+							</premis:linkingObjectIdentifierType>
+							<premis:linkingObjectIdentifierValue>nlaImageSeq-4310813-c.tif
+							</premis:linkingObjectIdentifierValue>
+						</premis:linkingObjectIdentifier>
+					</premis:event>
+    </mets:xmlData>
+   </mets:mdWrap>
+  </mets:digiprovMD>
+ </amdSec>
+ <fileSec xmlns:mets="http://www.loc.gov/METS/">
+  <fileGrp>
+   <mets:file ID="nlaImageSeq-4310810-c.tif" MIMETYPE="image/tif" ADMID="PREMISEVENT1 PREMISOBJECT1">
+    <mets:FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="tiff/nlaImageSeq-4310810-c.tif"/>
+   </mets:file>
+   <mets:file ID="nlaImageSeq-4310811-c.tif" MIMETYPE="image/tif" ADMID="PREMISEVENT2 PREMISOBJECT2">
+    <mets:FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="tiff/nlaImageSeq-4310811-c.tif"/>
+   </mets:file>
+   <mets:file ID="nlaImageSeq-4310812-c.tif" MIMETYPE="image/tif" ADMID="PREMISEVENT3 PREMISOBJECT3">
+    <mets:FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="tiff/nlaImageSeq-4310812-c.tif"/>
+   </mets:file>
+   <mets:file ID="nlaImageSeq-4310813-c.tif" MIMETYPE="image/tif" ADMID="PREMISEVENT4 PREMISOBJECT4">
+    <mets:FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="tiff/nlaImageSeq-4310813-c.tif"/>
+   </mets:file>
+  </fileGrp>
+  <fileGrp>
+   <mets:file ID="nlaImageSeq-4310810-c.xml" MIMETYPE="txt/xml" SIZE="3729" CHECKSUM="24cd7b4d612d2abbd5e4273db694b180" CHECKSUMTYPE="MD5" ADMID="PREMISOBJECT61">
+    <mets:FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="alto/nlaImageSeq-4310810-c.xml"/>
+   </mets:file>
+   <mets:file ID="nlaImageSeq-4310811-c.xml" MIMETYPE="txt/xml" SIZE="23985" CHECKSUM="e6e9aae5c5554b896a55cf9f38fa2e46" CHECKSUMTYPE="MD5" ADMID="PREMISOBJECT62">
+    <mets:FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="alto/nlaImageSeq-4310811-c.xml"/>
+   </mets:file>
+   <mets:file ID="nlaImageSeq-4310812-c.xml" MIMETYPE="txt/xml" SIZE="112852" CHECKSUM="623bc71f19fca86842480dd2f4821379" CHECKSUMTYPE="MD5" ADMID="PREMISOBJECT63">
+    <mets:FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="alto/nlaImageSeq-4310812-c.xml"/>
+   </mets:file>
+   <mets:file ID="nlaImageSeq-4310813-c.xml" MIMETYPE="txt/xml" SIZE="321985" CHECKSUM="5a3062497103ca07eddadbb16c3b6764" CHECKSUMTYPE="MD5" ADMID="PREMISOBJECT64">
+    <mets:FLocat LOCTYPE="URL" xlink:type="simple" xlink:href="alto/nlaImageSeq-4310813-c.xml"/>
+   </mets:file>
+  </fileGrp>
+ </fileSec>
+ <structMap ID="structmap1" TYPE="physical">
+  <div DMDID="issue-nla.aus-issn00050458_19500225" TYPE="issue">
+   <mets:div ID="divpage1" ORDER="1" TYPE="page">
+    <mets:fptr FILEID="nlaImageSeq-4310810-c.tif"/>
+    <mets:fptr FILEID="nlaImageSeq-4310810-c.xml"/>
+   </mets:div>
+   <mets:div ID="divpage2" ORDER="2" TYPE="page">
+    <mets:fptr FILEID="nlaImageSeq-4310811-c.tif"/>
+    <mets:fptr FILEID="nlaImageSeq-4310811-c.xml"/>
+   </mets:div>
+   <mets:div ID="divpage3" ORDER="3" TYPE="page">
+    <mets:fptr FILEID="nlaImageSeq-4310812-c.tif"/>
+    <mets:fptr FILEID="nlaImageSeq-4310812-c.xml"/>
+   </mets:div>
+   <mets:div ID="divpage4" ORDER="4" TYPE="page">
+    <mets:fptr FILEID="nlaImageSeq-4310813-c.tif"/>
+    <mets:fptr FILEID="nlaImageSeq-4310813-c.xml"/>
+   </mets:div>
+  </div>
+ </structMap>
+</mets>

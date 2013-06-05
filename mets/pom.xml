@@ -16,5 +16,47 @@
 		<artifactId>xom</artifactId>
 		<version>1.2.5</version>
 	</dependency>
+	<dependency>
+		<groupId>play</groupId>
+		<artifactId>jerkson</artifactId>
+		<version>2.9.1</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/bin/jerkson_2.9.1.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>fastxml</groupId>
+		<artifactId>jackson-annotations</artifactId>
+		<version>2.1.4</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/bin/jackson-annotations-2.1.4.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>fastxml</groupId>
+		<artifactId>jackson-core</artifactId>
+		<version>2.1.4</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/bin/jackson-core-2.1.4.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>fastxml</groupId>
+		<artifactId>jackson-databind</artifactId>
+		<version>2.1.4</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/bin/jackson-databind-2.1.4.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>codehaus</groupId>
+		<artifactId>jackson-core-asl</artifactId>
+		<version>1.9.10</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/bin/jackson-core-asl.jar</systemPath>
+	</dependency>
+	<dependency>
+		<groupId>codehaus</groupId>
+		<artifactId>jackson-mapper-asl</artifactId>
+		<version>1.9.10</version>
+		<scope>system</scope>
+		<systemPath>${basedir}/bin/jackson-mapper-asl.jar</systemPath>
+	</dependency>
   </dependencies>
 </project>
