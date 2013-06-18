@@ -31,7 +31,6 @@ public class BoundBoxMatcher {
     }
 
     public static void main(String[] args) {
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile("'b':\\{'(\\d*)', '(\\d*)', '(\\d*)', '(\\d*)'\\}");
         String ocrJson = "{'f': 'prefix', 'g': {'heading'}, 'b':{'123', '234', '345', '234'}, 'a':['b':{'213', '342', '453', '342'}, 'c':{'a':['b':{'213', '342', '453', '342'}, 'd': 'design'], 'e': 'example'}";
         double pixelFactor = 0.5;
         BoundBoxMatcher b = new BoundBoxMatcher(ocrJson, pixelFactor);
