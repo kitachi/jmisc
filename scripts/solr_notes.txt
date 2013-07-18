@@ -1,0 +1,41 @@
+. to start solr:
+
+- cd $SOLR_HOME/example
+- java -jar start.jar
+
+Note: then check solr admin can be displayed under:
+
+http://localhost:8983/solr/#/
+
+. to add a new instance:
+
+- cd $SOLR_HOME/example/solr
+- mkdir $NEW_DIR
+- cd $NEW_DIR
+- cp -rp ../collection1/* .
+- cd data
+- rm -rf *
+
+- through solr admin interface:
+
+  select "Core Admin" -> Add Core
+
+         name: $NEW_DIR
+ instance dir: $NEW_DIR
+      dataDir: data
+       config: solrconfig.xml
+       schema: schema.xml
+
+   press "Add Core"
+
+- select the new instance through solr admin interface:
+
+   click on "Core Selector", then type in $NEW_DIR
+
+   then a drop down menu should appear, give a list of options, include:
+    - Overview
+    - Ping
+    - Query
+    - Schema
+    - Config
+   etc
