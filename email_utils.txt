@@ -1,0 +1,150 @@
+http://blog.coretech.dk/jgs/outlook-2010-auto-export-body-of-new-e-mails/
+auto-export-body-of-new-e-mails
+Sub SaveMessageOnRule(Item As Outlook.MailItem)
+
+Dim strExportPath As String
+
+strExportPath = "C:\Temp\Mails\"
+
+Dim FileName As String
+
+FileName = strExportPath & Replace(Replace(Replace(Now & "_" & Item.EntryID & ".txt", ":", "_"), "-", "_"), " ", "_") 'Create filename and path, replace : with _, - with _ and space with _.
+
+Dim FileNum As Integer
+
+FileNum = FreeFile ' next file number
+
+Open FileName For Output As #FileNum ' creates the file if it doesn't exist
+
+Print #FileNum, Item.Body ' write information at the end of the text file
+
+Close #FileNum ' close the file
+
+End Sub
+Use RegEx to extract text from an Outlook email message
+Home / Developer / Use RegEx to extract text from an Outlook email message
+Last reviewed on July 23, 2013
+Getting text out of a message body isn't as hard as it sounds, provided there is something in the body to search on. For example, if you are looking for a tracking code in an email and it's always identified as "Tracking code:" you can use InStr, Len, Left or Right functions to find and extract the tracking code.
+
+
+For example, to extract the UPS tracking numbers for packages sent by Amazon.com and formatted as shown in the screenshot, I need to look for the words "Carrier Tracking ID", followed by possible white space and a colon (:).
+.Pattern = "(Carrier Tracking ID\s*[:]+\s*(\w*)\s*)"
+This returns the next alphanumeric string, or in my example, 1Z2V37F8YW51233715. (There are two tracking numbers in the email message and both are returned.)
+Use \s* to match an unknown number of white spaces (spaces, tabs, line feeds, etc) Use \d* to match only digits Use \w* to match alphanumeric characters, such as are used in UPS tracking codes.
+To use this code sample, open the VBA Editor using Alt+F11. Right-click on Project1 and choose Insert > Module. Paste the following code into the module.
+You'll need to set a reference to the Microsoft VBScript Regular Expressions 5.5 library in Tools, References.
+Note: if VBScript Expressions 1 is selected, deselect it. You can't use both v1 and v5.5.
+Don't forget, macro security needs to be set to low during testing.
+Sub GetValueUsingRegEx()
+ ' Set reference to VB Script library
+ ' Microsoft VBScript Regular Expressions 5.5
+  
+    Dim olMail As Outlook.MailItem
+    Dim Reg1 As RegExp
+    Dim M1 As MatchCollection
+    Dim M As Match
+         
+    Set olMail = Application.ActiveExplorer().Selection(1)
+   ' Debug.Print olMail.Body
+     
+    Set Reg1 = New RegExp
+     
+    ' \s* = invisible spaces
+    ' \d* = match digits
+    ' \w* = match alphanumeric
+     
+    With Reg1
+        .Pattern = "Carrier Tracking ID\s*[:]+\s*(\w*)\s*"
+        .Global = True
+    End With
+    If Reg1.test(olMail.Body) Then
+     
+        Set M1 = Reg1.Execute(olMail.Body)
+        For Each M In M1
+            ' M.SubMatches(1) is the (\w*) in the pattern
+            ' use M.SubMatches(2) for the second one if you have two (\w*)
+            Debug.Print M.SubMatches(1)
+             
+        Next
+    End If
+     
+End Sub
+
+If we look for just the colon (.Pattern ="([:]+\s*(\w*)\s*)" ), we get just the first word in the results:
+UPS May Standard 1Z2V37F8YW51233715 Diane
+This is because (\w*) tells the code to get the next alphanumeric string, not the entire line, and strings do not include spaces.
+
+----------
+more regex example:
+
+Sub First(Item As Outlook.MailItem)
+
+
+    Dim oItem As Outlook.MailItem
+    Dim Reg1 As RegExp
+    Dim Reg2 As RegExp
+    Dim M1 As MatchCollection
+    Dim M As Match
+    Dim EntryID As New Collection
+    Dim strID As String
+
+
+
+
+    Set Reg1 = New RegExp
+    Set Reg2 = New RegExp
+    
+    strID = Item.EntryID
+    Set oItem = Application.Session.GetItemFromID(strID)
+    
+    
+    With Reg1
+        .Pattern = "(Email Address:\s*(\d*)\s*)"
+        .Global = True
+    End With
+    
+    If Reg1.test(oItem.Body) Then
+        Set M1 = Reg1.Execute(oItem.Body)
+        For Each M In M1
+          strCode = M.SubMatches(1)
+        Next
+    End If
+    
+    With Reg2
+        
+        .Pattern = "([a-z0-9.]*)@([a-z0-9.]*)"
+        .Global = True
+    End With
+
+
+    If Reg2.test(Item.Body) Then
+        Set M1 = Reg2.Execute(Item.Body)
+        For Each M In M1
+          strAlias = M.SubMatches(1)
+        Next
+    End If
+    
+    
+ 
+'--------------
+ 
+ 'Item.Subject = "New Subject Title" & strCode
+ 'Item.Save
+ 
+Set oItem = Nothing
+Dim objMsg As MailItem
+Set objMsg = Application.CreateItemFromTemplate("C:\Documents and Settings\Name\My Documents\First Email.oft")
+objMsg.Recipients.Add strAlias & "[a-z0-9.]*)@([a-z0-9.]*)"
+objMsg.Subject = "New Subject Title" & strCode
+objMsg.Display '.Send
+Set objMsg = Nothing
+
+
+End Sub  
+
+
+
+http://static.springsource.org/downloads/nightly/snapshot-download.php?project=ROO
+
+http://java.dzone.com/articles/using-java-7s-watchservice
+http://codingjunkie.net/java-7-watchservice
