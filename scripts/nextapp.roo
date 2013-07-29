@@ -1,0 +1,19 @@
+// Spring Roo 1.2.5.BUILD-SNAPSHOT [rev 61090d2] log opened at 2013-07-30 00:11:53
+project --topLevelPackage sz.nextapp
+jpa setup --provider HIBERNATE --database HYPERSONIC_PERSISTENT 
+entity jpa --class ~.Timer --testAutomatically
+field string --fieldName message --notNull
+entity jpa --class ~.szext.OCR --testAutomatically
+field string --fieldName OCRText --notNull
+web mvc setup
+// script --file nextapp.roo
+hint web mvc
+web mvc all --package ~.web
+// web mvc scaffold --class ~.web.TimerController
+// web mvc scaffold ~.web.szext.OCRController
+web mvc controller ~.web.szext.OCRController
+// [failed] selenium test --controller ~.web.TimeController
+selenium test --controller ~.web.TimerController
+perform tests
+exit
+// Spring Roo 1.2.5.BUILD-SNAPSHOT [rev 61090d2] log closed at 2013-07-30 00:16:39
