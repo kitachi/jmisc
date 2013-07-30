@@ -1,0 +1,104 @@
+// Role of Spring Roo: design/modeling dsl following agile, MDD
+// Design for the Requirement/Story: ability to store files to Doss as a ingest step
+// Goal: designing a copy files java library util
+//
+tailor activate --name web-simple
+// Create a new project
+project --topLevelPackage ingest.storefiles --projectName copyfiles
+
+// Setup JPA persistence using EclipseLink and H2
+jpa setup --provider ECLIPSELINK --database H2_IN_MEMORY
+
+// Create domain entities
+entity jpa --class ~.domain.File --activeRecord false --testAutomatically
+field string --fieldName fileName --sizeMin 2 --notNull
+field string --fieldName filePath --sizeMin 2 --notNull
+
+entity jpa --class ~.domain.Blob --activeRecord false --testAutomatically
+field number --fieldName id --type java.lang.Long --notNull
+
+entity jpa --class ~.domain.FileLocation --activeRecord false --testAutomatically
+field reference --fieldName from --type ~.domain.File
+field reference --fieldName to --type ~.domain.Blob
+
+entity jpa --class ~.domain.StoreFileTx --testAutomatically --activeRecord false --identifierType ~.domain.StoreFileRequest
+field number --fieldName blobTxId --type java.lang.Long
+field set --fieldName fileRefs --type ~.domain.FileLocation
+
+field string --fieldName metsLocation --class ~.domain.StoreFileRequest
+field string --fieldName pi
+field string --fieldName timestamp
+field string --fieldName accessImageDir
+field string --fieldName originalImageDir
+field string --fieldName ocrAltoDirectory
+field string --fieldName ocrJsonDirectory
+field string --fieldName derivativesLoc
+field string --fieldName mastersLoc
+
+// Define a repository layer for the domain entities
+repository jpa --interface ~.repository.Blobs --entity ~.domain.Blob
+repository jpa --interface ~.repository.Files --entity ~.domain.File
+repository jpa --interface ~.repository.FileLocations --entity ~.domain.FileLocation
+repository jpa --interface ~.repository.StoreFileTxList --entity ~.domain.StoreFileTx
+
+// Define a service/facade layer
+service --interface ~.service.BlobService --entity ~.domain.Blob
+service --interface ~.service.FileService --entity ~.domain.File
+service --interface ~.service.FileRefService --entity ~.domain.FileLocation
+service --interface ~.service.StoreFileService --entity ~.domain.StoreFileTx
+
+// Setup all the web MVC scaffolding
+web mvc setup
+web mvc all --package ~.web
+
+// Offer JSON remoting for all domain types through Spring MVC
+json all --deepSerialize
+web mvc json setup
+// the following didn't quite work
+web mvc json all --package ~.web
+// had to add the following to get JSON remoting working
+web mvc json add --class ~.web.BlobController --jsonObject ~.domain.Blob
+web mvc json add --class ~.web.FileController --jsonObject ~.domain.File
+web mvc json add --class ~.web.FileRefController --jsonObject ~.domain.FileLocation
+web mvc json add --class ~.web.StoreFileController --jsonObject ~.domain.StoreFileTx
+
+// Example scripts for JSON remoting for the copyfiles utility:
+// ==============================================================================================================================================================
+// - Test the services provided through the scaffolding works ok:
+// ==============================================================================================================================================================
+// create sample file data
+// curl -i -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d '{fileName: "Thin Crust", filePath: ""}' http://localhost:8080/copyfiles/files
+// curl -i -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d '[{name: "Cheesy Crust"},{name: "Thick Crust"}]' http://localhost:8080/copyfiles/files/jsonArray
+// ==============================================================================================================================================================
+// curl -i -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d '[{name: "Fresh Tomato"},{name: "Prawns"},{name: "Mozarella"},{name: "Bogus"}]' http://localhost:8080/copyfiles/blobs/jsonArray
+// curl -i -X DELETE -H "Accept: application/json" http://localhost:8080/copyfiles/blobs/7
+// curl -i -X PUT -H "Content-Type: application/json" -H "Accept: application/json" -d '{id:6,name:"Mozzarella",version:1}' http://localhost:8080/copyfiles/blobs
+// curl -i -H "Accept: application/json" http://localhost:8080/copyfiles/blobs
+// curl -i -H "Accept: application/json" http://localhost:8080/copyfiles/blobs/6
+// curl -i -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d '{name:"Napolitana",price:7.5,base:{id:1},toppings:[{name: "Anchovy fillets"},{name: "Mozzarella"}]}' http://localhost:8080/copyfiles/filelocations
+// curl -i -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d '{name:"Stefan",total:7.5,address:"Sydney, AU",deliveryDate:1314595427866,id:{shopCountry:"AU",shopCity:"Sydney",shopName:"Pizza Pan 1"},pizzas:[{id:8,version:1}]}' http://localhost:8080/copyfiles/storefiletxs
+//
+// ==============================================================================================================================================================
+// Note: need to bounce the webapp to clear all input data after the above test probe.
+// ==============================================================================================================================================================
+// - Model the expected behaviour of the copyfile utility:
+//    - create a storefiletx (i.e. a store file transaction)
+//    - verify the mapping of src,tgt file locations
+// ==============================================================================================================================================================
+// create sample store file transaction
+// curl -i -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d '{name:"Stefan",total:7.5,address:"Sydney, AU",deliveryDate:1314595427866,id:{shopCountry:"AU",shopCity:"Sydney",shopName:"Pizza Pan 1"},pizzas:[{id:8,version:1}]}' http://localhost:8080/copyfiles/storefiletxs
+//
+// verify mapping of src, tgt file locations for the store file transaction
+// curl -i -H "Accept: application/json" http://localhost:8080/copyfiles/fileLocations
+// verify list of input files for the store file transaction
+// curl -i -H "Accept: application/json" http://localhost:8080/copyfiles/files
+// verify list of output blobs for the store file transaction
+// curl -i -H "Accept: application/json" http://localhost:8080/copyfiles/blobs
+//
+// ==============================================================================================================================================================
+// Implementation required:
+//   - plugin CopyFilesHelper.process() in StoreFileController aj creat() and update() methods, 
+//     and in StoreFileController json aj createFromJson(), createFromJsonArray(), updateFromJson() methods
+//   - plugin CopyFilesHelper.undo() in StoreFileController aj delete() method
+//     and in StoreFileController json aj deleteFromJson() method
+// ==============================================================================================================================================================
