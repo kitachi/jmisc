@@ -57,3 +57,12 @@ Disadvantages of using Spring Roo:
 
 - Not able to DI into the Spring generated code with in-house developed java
   objects if using Spring Roo.
+
+
+Notes:
+
+- how to customize ui
+
+- how to setup json remote
+
+- how to customize controllers
