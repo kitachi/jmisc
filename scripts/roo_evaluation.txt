@@ -1,0 +1,59 @@
+findings and
+recommendation: - Spring Roo is a clear best choice (so far) as a design tool
+                  for the application service layer compare to any of the 
+                  existing frameworks used in house.
+
+                  Spring Roo provides much (if not all) the infrasture setup and test generation
+                  for creating an application service (esp. a web service) 
+                  and allow delegation to in-house developed java libraries 
+                  to service its requests.  
+
+                  The in-house developed java libraries does not require modification to
+                  work with Spring Roo, and can be reused in the coding/implementation
+                  of the actual application.
+
+                  Spring Roo can be used to demonstrate and refine the designed 
+                  capability ahead of its actual implementation to multidisciplinary
+                  audience, and reduce the holdup on feedback cycle.
+
+                  Using and retaining roo script file(s) will be valuable
+                  design documentation of the application services blueprint,
+                  providing ways to evolve design, and guiding future maintenance
+                  and redevelopment.
+
+                - On the other hand, Spring Roo is not a good framework (so far)
+                  to use in coding/implementation of the actual application. 
+                  By saying this, I mean the Spring Roo generated code (for service infrastructure setup)
+                  contains annotations and AOP specific to Spring, hence hinder
+                  the flexibility on using availabe OO features provided through
+                  stock standard java POJO.  
+     
+                  In that regards, the Play framework is better, as it had little 
+                  framework specific annotation, most of framework utilities and 
+                  infrastructure are provided through java libraries using POJO.
+                  Plug in our in-house java library into Play framework for the
+                  actual application implmentation will be easier to maintain.
+             
+
+Advantages of using Spring Roo:
+- Good design tool: 
+    - geared towards modelling domain objects, repositories and services, 
+    - its jsp ui and json remoting service can present service function and its results to both business staff and technical staff.
+    - changes to design can be quickly created for visualisation indenpendently from the
+      actual implmentation of a service, 
+    - allow rapid evolving of design before implementation commence
+    - can be rescaffolded dramatically and quickly during the actual implementation to validate the impl.
+    - provide auto test generation.
+
+- Allow visualisation of complex or subtle application concepts/business rules. (e.g. logical delete of
+  files (expire, delete, purge??) using filelocations)
+
+Disadvantages of using Spring Roo:
+
+- not a good implementation framework due to heavy use of annotations and AOP.
+  Inheritance does not apply to AOP, in order to call in-house developed java
+  libraries, instead of extend or wrap around the generated code, has to modify 
+  the actual Spring generated code.  
+
+- Not able to DI into the Spring generated code with in-house developed java
+  objects if using Spring Roo.
