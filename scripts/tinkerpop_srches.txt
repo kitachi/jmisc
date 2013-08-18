@@ -1,0 +1,108 @@
+breath first search:
+
+g.v(1).out('knows').loop(1){true}{true}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+
+table to print out multiple properties of output vertices:
+
+t = new Table()
+g.v(1).out('knows').as('x').name.as('name').back('x').age.as('age').table(t)
+t
+
+select:
+
+g.v(1).as('x').out('knows').as('y').select{it.id}{it.name}.loop(1){it.loops < 2}
+
+
+Recursive traversal:
+
+gremlin> g = TinkerGraphFactory.createTinkerGraph();                                                       
+==>tinkergraph[vertices:6 edges:6]
+gremlin> g.v(1).out('knows').loop(1){true}{true}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+==>{age=27, name=vadas}
+==>{age=32, name=josh}
+gremlin> g.addEdge(g.v(4), g.v(6), 'knows')
+==>e[0][4-knows->6]
+gremlin> g.addEdge(g.v(2), g.v(5), 'knows')
+==>e[1][2-knows->5]
+gremlin> g.v(1).out('knows').loop(1){true}{true}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+==>{name=ripple, lang=java}
+==>{age=35, name=peter}
+==>{age=27, name=vadas}
+==>{age=32, name=josh}
+gremlin> g.v(1).out('knows').loop(1){it.loops < 3}{true}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+==>{name=ripple, lang=java}
+==>{age=35, name=peter}
+==>{age=27, name=vadas}
+==>{age=32, name=josh}
+gremlin> g.v(1).out('knows').loop(1){it.loops < 1}{true}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+==>{name=ripple, lang=java}
+==>{age=35, name=peter}
+==>{age=27, name=vadas}
+==>{age=32, name=josh}
+gremlin> g.v(1).out('knows').loop(1){it.loops < 0}{true}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+==>{name=ripple, lang=java}
+==>{age=35, name=peter}
+==>{age=27, name=vadas}
+==>{age=32, name=josh}
+gremlin> g.v(1).out('knows').loop(1){it.loops < 0}{it.loops < 1}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+gremlin> g.v(1).out('knows').loop(1){it.loops < 0}{it.loops < 2}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+gremlin> g.v(1).out('knows').loop(1){it.loops < 2}{it.loops < 2}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+gremlin> g.v(1).out('knows').loop(1){it.loops < 3}{it.loops < 3}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+==>{name=ripple, lang=java}
+==>{age=35, name=peter}
+==>{age=27, name=vadas}
+==>{age=32, name=josh}
+gremlin> g.v(1).out('knows').loop(1){it.loops < 4}{it.loops < 4}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+==>{name=ripple, lang=java}
+==>{age=35, name=peter}
+==>{age=27, name=vadas}
+==>{age=32, name=josh}
+gremlin> g.v(1).out('knows').loop(1){it.loops < 5}{it.loops < 5}.gather{it.add(g.v(1));it._().out('knows')}.scatter().map()
+==>{name=ripple, lang=java}
+==>{age=35, name=peter}
+==>{age=27, name=vadas}
+==>{age=32, name=josh}
+gremlin> 
+
+https://groups.google.com/forum/#!topic/gremlin-users/0CWhd_xR9O4
+
+
+===== more examples ====
+
+gremlin> g = TinkerGraphFactory.createTinkerGraph()                                        
+==>tinkergraph[vertices:6 edges:6]
+gremlin> g.addVertex(7);g.addVertex(8)                                                     
+==>v[8]
+gremlin> g.v(7).sideEffect{[it.setProperty('name', 'joe'), it.setProperty('age', '34')]}   
+==>v[7]
+gremlin> g.v(8).sideEffect{[it.setProperty('name', 'helena'), it.setProperty('age', '24')]}
+==>v[8]
+gremlin> g.addEdge(null, g.v(2), g.v(7),'knows')                                           
+==>e[0][2-knows->7]
+gremlin> g.addEdge(null, g.v(4), g.v(8),'knows')                                           
+==>e[1][4-knows->8]
+gremlin> g.v(1).out('knows').loop(1){true}{true}.path().gather()                           
+==>[[v[1], v[2]], [v[1], v[4]], [v[1], v[2], v[7]], [v[1], v[4], v[8]]]
+gremlin> m=[]                                                                              
+gremlin> g.v(1).out('knows').loop(1){true}{true}.path().reverse()[0].fill(m)               
+No signature of method: java.util.ArrayList.fill() is applicable for argument types: (java.util.ArrayList) values: [[]]
+Possible solutions: find(), find(), find(groovy.lang.Closure), find(groovy.lang.Closure), size(), size()
+Display stack trace? [yN] 
+gremlin> g.v(1).out('knows').loop(1){true}{true}.path().reverse()[0]._().gather()
+==>[v[1], v[4], v[8]]
+gremlin> g.v(1).out('knows').loop(1){true}{true}.path().reverse()[0]._().gather().reverse()
+==>[v[1], v[4], v[8]]
+gremlin> g.v(1).out('knows').loop(1){true}{true}.path().reverse()[0]._().transform({it.reverse()}).gather()
+No signature of method: groovy.lang.MissingMethodException.reverse() is applicable for argument types: () values: []
+Possible solutions: every(), every(groovy.lang.Closure), getCause(), getNode(), getType()
+Display stack trace? [yN] 
+gremlin> g.v(1).out('knows').loop(1){true}{true}.path().reverse()[0]._().transform({it.reverse()})         
+No signature of method: groovy.lang.MissingMethodException.reverse() is applicable for argument types: () values: []
+Possible solutions: every(), every(groovy.lang.Closure), getCause(), getNode(), getType()
+Display stack trace? [yN] 
+gremlin> g.v(1).out('knows').loop(1){true}{true}.path().reverse()[0]._().gather.transform({it.reverse()})
+==>[v[8], v[4], v[1]]
+gremlin> 
+
+
+=== also http://sql2gremlin.com is very helpful =====

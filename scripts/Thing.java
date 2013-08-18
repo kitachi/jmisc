@@ -2,6 +2,7 @@ package models;
 
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.security.InvalidParameterException;
@@ -12,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,10 +21,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import models.ingest.FileLocation;
+import models.ingest.ThingCopy;
 import nu.xom.Document;
 import nu.xom.Element;
 
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
@@ -37,20 +45,19 @@ import com.avaje.ebean.Query;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
 import com.avaje.ebean.SqlRow;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "dlThing")
-public class Thing extends Model {
+public class Thing extends Model implements AbstractThing {
     public static enum ThingType {
         WORK, COPY, FILE
     }
     
     public static enum ThingRelationship {
-        ISPARTOF, ISCOPYOF, ISFILEOF;
+        ISPARTOF, ISCOPYOF, ISFILEOF, EXISTSON;
 
         public int code() {
             return this.ordinal() + 1;
@@ -58,7 +65,7 @@ public class Thing extends Model {
     }
     
     public static enum CopyRole {
-        ACCESS_COPY("ac"), MASTER_COPY("m"), OCR_JSON_COPY("oc"), OCR_ALTO_COPY("at"), METS_JSON_COPY("mc"), OCR_METS_COPY("mt");
+        ACCESS_COPY("ac"), MASTER_COPY("m"), OCR_JSON_COPY("oc"), OCR_ALTO_COPY("at"), OCR_METS_COPY("mt");
         
         private String code;
         private CopyRole(String code) {
@@ -72,10 +79,19 @@ public class Thing extends Model {
         public int idx() {
             return this.ordinal();
         }
+        
+        public static CopyRole isCopyRole(String copyRole) {
+            for (CopyRole _copyRole : CopyRole.values()) {
+                if (_copyRole.name().equalsIgnoreCase(copyRole))
+                    return _copyRole;
+            }
+            return null;
+        }
     }
     
     public static final String ACCESS_COPY = "ac";
-
+    
+    // @GremlinGroovy("g.v(long)")
     public static Finder<Long, Thing> find = new Finder<Long, Thing>(
             Long.class, Thing.class);
 
@@ -84,18 +100,26 @@ public class Thing extends Model {
         // find Thing by its PI
         @Override
         public Thing byId(String id) {
-            if (id == null)
+        	System.out.println("in findByPI. id is " + id);
+            if (id == null) {
+            	System.out.println("in findByPI. id is null.");
                 throw new InvalidParameterException("id is null.");
+            }
             Thing t = Thing.find.where().eq("pi", id).findUnique();
-            if (t == null)
+            if (t == null) {
+            	System.out.println("in findByPI. thing is null");
                 throw new ThingNotFoundException("No thing is found for " + id
                         + ".");
+            }
 
+            System.out.println("in findByPI. return a not null thing.");
             return t;
         }
     };
 
     public static final String OCR_COPY = "oc";
+    
+    public static final ObjectMapper jsonMapper = new ObjectMapper();
 
     @Transient
     public String _description;
@@ -119,7 +143,7 @@ public class Thing extends Model {
 
     @Column(name = "oldId")
     public String oldId;
-    
+
     @Column(name = "pi")
     public String pi;
 
@@ -135,20 +159,45 @@ public class Thing extends Model {
     @Column(name = "type")
     public String tType;
 
-    private DbUtil du = new DbUtil();
-    private GeneralUtil gu = new GeneralUtil();
+	private DbUtil du = new DbUtil();
+	private GeneralUtil gu = new GeneralUtil();
 
+	public static void delete(Set<Thing> things) {
+		if (things != null) {
+			for (Thing t : things) {
+				if (t != null) {
+					
+					if (t.tType.equalsIgnoreCase(Thing.ThingType.COPY.name())) {
+						// check for ThingCopy, del from ThingCopy
+						ThingCopy c = ThingCopy.find.byId(t.id);
+						if (c != null) c.delete();
+					} else if (t.tType.equalsIgnoreCase(Thing.ThingType.FILE.name())) {
+						// check for ThingFile, del from ThingFile, FileLocation
+						ThingFile f = ThingFile.find.byId(t.id);
+						FileLocation fl = FileLocation.find.byId(t.id);
+						if (f != null) f.delete();
+						if (fl != null) fl.delete();
+					}
+					t.delete();
+				}
+			}
+		}
+	}
+
+    @GremlinGroovy("it.has('tType', 'work').has('oldId').filter{it.oldId[0..3] == 'nla.'}.filter{it.oldId[0..6] != 'nla.oh-'}?true:false")
     public boolean canBeDelivered() {
         return "work".equals(tType) && oldId != null
                 && oldId.startsWith("nla.") && !oldId.startsWith("nla.oh-");
     }
 
+    @JavaHandler
     public boolean canBeUpdated(String userId) {
         return ("work".equals(tType) || "arrangement".equals(tType)) ? new User(
                 userId).hasUpdatePrivilege() : null;
     }
 
     // Get permissions of self and ancestors
+    @JavaHandler
     public List<ThingPermission> getAllPermissions() {
         List<ThingPermission> permissions = new ArrayList<ThingPermission>();
         LinkedHashMap<Long, Thing> ancestorMap = new LinkedHashMap<Long, Thing>();
@@ -172,10 +221,13 @@ public class Thing extends Model {
         return permissions;
     }
 
+    
+    @GremlinGroovy("it.out('isPartOf').path.gather()")
     public List<List<Thing>> getAncestors() {
         return getAncestors(false);
     }
 
+    @GremlinGroovy("it.out('knows').loop(1){true}{true}.path().gather()")
     public List<List<Thing>> getAncestors(boolean reverseOrder) {
         List<String> ancestorIdList = new ArrayList<String>();
         getAncestorIdList(this, ancestorIdList, -1);
@@ -201,10 +253,12 @@ public class Thing extends Model {
         }
     }
 
+    @GremlinGroovy("it.out('knows').loop(1){true}{true}.path().transform({it.reverse()}).gather()")
     public List<List<Thing>> getAncestorsInReverseOrder() {
         return getAncestors(true);
     }
 
+    @GremlinGroovy("it.out('knows').loop(1){true}{true}.path().reverse()[0]._().gather()")
     public List<Thing> getAncestorsOfFirstParent() {
         List<Thing> ancestors = new ArrayList<Thing>();
         Thing parent = getFirstParent();
@@ -217,6 +271,7 @@ public class Thing extends Model {
         return ancestors;
     }
 
+    @GremlinGroovy("it.out('knows').loop(1){true}{true}.path().reverse()[0]._().gather.transform({it.reverse()})")
     public List<Thing> getAncestorsOfFirstParentInReverseOrder() {
         List<Thing> ancestorList = getAncestorsOfFirstParent();
         List<Thing> reverseAncestorList = new ArrayList<Thing>(
@@ -241,7 +296,16 @@ public class Thing extends Model {
     }
 
     public List<Thing> getChildren() {
-        children = getChildrenThing(1);
+        List<Thing> _children = getChildrenThing(1);
+        try{
+        	children = getChildrenThing(4);
+        	if (children == null) 
+        		children = new ArrayList<Thing>();
+        	if (_children != null)
+        		children.addAll(_children);
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
         return children;
     }
 
@@ -372,31 +436,36 @@ public class Thing extends Model {
         String sql = "from dlThing t, dlRelationship r where t.id = r.thing2Id and r.relationship in (1, 2, 3) and r.thing1Id = ? order by r.relOrder, t.id";
         return getThingsFromJoinQuery(sql, id);
     }
+    
+    public List<Thing> getParents(Thing.ThingRelationship relationship) {
+    	if (relationship == null) return getParents();
+    	
+        // Get all parents of specified relationship
+        String sql = "from dlThing t, dlRelationship r where t.id = r.thing2Id and r.relationship = ? and r.thing1Id = ? order by r.relOrder, t.id";
+        return getThingsFromJoinQuery(sql, relationship.code(), id);
+    }
 
     public String getParseDescriptionInHtml() {
         return getParseDescriptionInHtml(true);
     }
 
     public String getParseDescriptionInHtml(boolean skipEmptyFields) {
-        String desc = getDescription();
-        JsonObject descJson = gu.parseJson(desc);
-        if (descJson != null) {
+        Map<String, Object> obj = gu.parseJsonObject(getDescription());
+        if (obj != null) {
             StringBuilder sb = new StringBuilder();
-            for (Iterator<Entry<String, JsonElement>> ir = descJson.entrySet()
-                    .iterator(); ir.hasNext();) {
-                Entry<String, JsonElement> entry = ir.next();
-                String val = entry.getValue().getAsString();
-                if (!skipEmptyFields || !"".equals(val)) {
+            for (Entry<String, Object> entry : obj.entrySet()) {
+                String value = (String) Objects.firstNonNull(entry.getValue(), "").toString();
+                if (!skipEmptyFields || !value.equals("")) {
                     if (sb.length() > 0) {
                         sb.append("<br/>");
                     }
                     sb.append("<em>" + escapeHtml(entry.getKey()) + "</em>: "
-                            + escapeHtml(val));
+                            + escapeHtml(value));
                 }
             }
             return sb.toString();
         } else {
-            return desc;
+            return null;
         }
     }
 
@@ -425,15 +494,11 @@ public class Thing extends Model {
     }
 
     public String getTitleFromDescription() {
-        JsonObject descJson = gu.parseJson(getDescription());
-        String s = null;
-        if (descJson != null) {
-            JsonElement el = descJson.get("title");
-            if (el != null) {
-                s = el.getAsString();
-            }
+        try {
+            return (String) gu.parseJsonObject(getDescription()).get("title");
+        } catch (NullPointerException e) {
+            return null;
         }
-        return s;
     }
 
     public String getType() {
@@ -554,26 +619,25 @@ public class Thing extends Model {
         Document doc = new Document(getElement("item", withChildren));
         return doc.toXML();
     }
-
+    
     public void updateChildrenWithOrderFromJson(String jsonTxt) {
-        JsonParser jsParser = new JsonParser();
-        JsonElement jsEl = jsParser.parse(jsonTxt);
-        if (jsEl instanceof JsonObject) {
+        Map<String,Object> obj = gu.parseJsonObject(jsonTxt);
             String updateSql = "update dlRelationship set relOrder = ? where thing1Id = ? and relationship = ? and thing2Id = ?";
             String insertSql = "insert into dlRelationship (thing1Id, relationship, thing2Id, relOrder) values (?, ?, ?, ?)";
-            JsonObject jsObj = (JsonObject) jsEl;
-            for (Iterator<Entry<String, JsonElement>> ir = jsObj.entrySet()
-                    .iterator(); ir.hasNext();) {
-                Entry<String, JsonElement> entry = ir.next();
+            for (Entry<String, Object> entry : obj.entrySet()) {
                 String key = entry.getKey();
-                String val = entry.getValue().getAsString();
+                String val = entry.getValue().toString();
                 int cnt = du.executeUpdate(updateSql, val, key, 1, id);
                 if (cnt == 0) {
                     // Try insert
                     cnt = du.executeUpdate(insertSql, key, 1, id, val);
                 }
             }
-        }
+    }
+    
+    public synchronized void updateDescription(ThingDescription desc) throws JsonGenerationException, JsonMappingException, IOException {
+        description = desc.getBytes();
+        this.save();
     }
 
     private void addChildElement(Element element, String name, Object value) {
@@ -590,8 +654,12 @@ public class Thing extends Model {
         }
     }
 
-    private void getAncestorIdList(Thing t, List<String> ancestorIdList, int idx) {
-        List<Thing> parents = t.getParents();
+    public void getAncestorIdList(Thing t, List<String> ancestorIdList, int idx) {
+    	getAncestorIdList(t, ancestorIdList, idx, null);
+    }
+    
+    public void getAncestorIdList(Thing t, List<String> ancestorIdList, int idx, Thing.ThingRelationship rel) {
+        List<Thing> parents = t.getParents(rel);
         if (parents != null && parents.size() > 0) {
             if (ancestorIdList.isEmpty()) {
                 ancestorIdList.add("");
@@ -610,7 +678,7 @@ public class Thing extends Model {
                         + ("".equals(ancestorIdList.get(idx)) ? "" : ",")
                         + ancestorIdList.get(idx);
                 ancestorIdList.set(idx, newVal);
-                getAncestorIdList(parent, ancestorIdList, idx);
+                getAncestorIdList(parent, ancestorIdList, idx, rel);
             }
         }
     }
@@ -767,5 +835,28 @@ public class Thing extends Model {
             node.put("groups", sb.toString());
         }
         return node;
+    }
+
+    public Long getInternalId() {
+        return getId();
+    }
+
+    public String getPI() {
+        return oldId;
+    }
+
+    public String getSubType() {
+        return subType;
+    }
+
+    public List<AbstractThing> getFlattenedAncestorLineages() {
+        List<AbstractThing> flattenedLineages = new ArrayList<AbstractThing>();
+        List<List<Thing>> ancestors = getAncestors();
+        for (List<Thing> lineage : ancestors) {
+            for (Thing ancestor : lineage) {   
+                flattenedLineages.add(ancestor);
+            }
+        } 
+        return flattenedLineages;
     }
 }
