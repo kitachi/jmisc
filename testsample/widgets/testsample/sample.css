@@ -1,0 +1,25 @@
+.pavo-widget.sample {
+    overflow: auto;
+}
+
+.pavo-maxxed .pavo-widget.sample {
+	display: none;
+}
+
+.pavo-widget .santext p {
+    margin-right: 1em;
+    margin-bottom: 0.5em;
+    text-rendering: optimizeLegibility;
+    font-size: 13px;
+    line-height: 1.5;
+    font-family: 'Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif;
+}
+
+.pavo-widget.sample textarea {
+    width: 95%;
+    font-size: 13px;
+
+    font-family: 'Helvetica Neue',Arial,'Liberation Sans',FreeSans,sans-serif;
+    height: 1.5em;
+    float: left
+}
