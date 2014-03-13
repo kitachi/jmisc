@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html class="" lang="eng">
+  <head>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <!-- allowable migration ops -->
+    <!-- print out the migration configuration properties: /migrations/cfg (get) -->
+    <!-- print out the migration data mapping definitions: /migrations/mapping (get) -->
+    <!-- print out the migration pre-report of the DCM data: /migrations/pre-report/<workPid> (get) -->
+    <!-- (todo) perform visual comparison of the migrated work to its original work in DCM (get) -->
+    <!-- full migration of a DCM work with specified DCM workPid: /migrations/migrate/<workPid> (post) -->
+    <!-- partial migration of a DCM work with specified DCM workPid: /migrations/migrate/<workPid>/next/<chunksize>/items (post) -->
+    <!-- partial migration of a DCM work to an existing DLIR work: /migrations/migrate/<workPid>/to/<objId>/next/<chunksize>/items (post)-->
+    <!-- create a job from an migrated DCM work: /migrations/create/job/from/<objId> -->
+
+    <div class="container">
+      <form id="mig-form" role="form" action="http://localhost:8080/banjo/migrations/" method="post">
+        <div class="form-group">
+          <!-- TODO: make this a migration request -->
+          <label for="migrationRequest">Migration Request</label>
+          <!-- input type="text" class="form-control" id="migrationRequest" placeholder="Enter Migration Request" value="migrations/cfg" -->
+          <select id="migrationRequest" class="form-control" name="migrationRequest" style="width:40%">
+              <option value="" selected></option>
+              <option value="migrations/migrate/<workPid>">Migrate a DCM work in full</option>
+              <option value="migrations/migrate/<workPid>/next/<chunksize>/items">Migrate a DCM work in part</option>
+              <option value="migrations/migrate/<workPid>/to/<objId>/next/<chunksize>/items">Migrate a DCM work in part to an existing DLIR work</option>
+              <option value="migrations/pre-report/<workPid>">Pre-report for a DCM work migration</option>
+              <option value="migrations/create/job/from/<objId>">Create a job from an migrated DCM work</option>
+          </select>
+        </div>
+        <div id="workPidFld" class="form-group" style="display: none;">
+          <label for="workPid">Work PI</label>
+          <input type="text" class="form-control" id="workPid" placeholder="Enter DCM work pi" value="">
+        </div>
+        <div id="chunkSizeFld" class="form-group" style="display: none;">
+          <label for="chunkSize">No. of Items</label>
+          <input type="text" class="form-control" id="chunkSize" placeholder="Enter number of items for partial migration" value="">
+        </div>
+        <div id="objIDFld" class="form-group" style="display: none;">
+           <label for="objID">New Work PI</label>
+           <input type="text" class="form-control" id="objID" placeholder="Enter DLIR work pi" value="">
+        </div>
+
+        <button id="runButton" type="button" class="btn btn-default">go</button>
+      </form>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script>
+        $("#migrationRequest").on('change', function() {
+            if ($("#migrationRequest").val() === "migrations/migrate/<workPid>") {
+                $("#workPidFld").slideDown();
+                $("#chunkSizeFld").slideUp();
+                $("#objIDFld").slideUp();
+            } else if ($("#migrationRequest").val() === "migrations/migrate/<workPid>/next/<chunksize>/items" ) {
+                $("#workPidFld").slideDown();
+                $("#chunkSizeFld").slideDown();
+                $("#objIDFld").slideUp();
+            } else if ($("#migrationRequest").val() === "migrations/migrate/<workPid>/to/<objId>/next/<chunksize>/items") {
+                $("#workPidFld").slideDown();
+                $("#chunkSizeFld").slideDown();
+                $("#objIDFld").slideDown();
+            } else if ($("#migrationRequest").val() === "migrations/pre-report/<workPid>") {
+                $("#workPidFld").slideDown();
+                $("#chunkSizeFld").slideUp();
+                $("#objIDFld").slideUp();
+            } else if ($("#migrationRequest").val() === "migrations/create/job/from/<objId>") {
+                $("#workPidFld").slideUp();
+                $("#chunkSizeFld").slideUp();
+                $("#objIDFld").slideDown();
+            } else {
+                $("#workPidFld").slideUp();
+                $("#chunkSizeFld").slideUp();
+                $("#objIDFld").slideUp();
+            }
+        });
+ 
+        $("#runButton").on('click', function() {
+            var req = $('#mig-form').attr("action");
+            alert('req url is ' + req);
+
+            req = req + "cfg";
+            $('#mig-form').attr("action", req);
+            alert('req url is ' + req);
+
+            req = req.replace("cfg", "abc");
+            alert('req url is ' + req);
+            // $('#mig-form').submit();
+        });
+    </script>
+  </body>
+</html>
